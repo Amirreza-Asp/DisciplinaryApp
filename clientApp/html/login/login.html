@@ -1,0 +1,100 @@
+
+<!doctype html>
+<html lang="fa-IR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <!-- inline css   -->
+    <link rel="stylesheet" href="../../css/main.css">
+
+    <!-- specific page style   -->
+    <link rel="stylesheet" href="../../css/pages/login.css">
+    <!-- title  -->
+    <title>title</title>
+</head>
+<body>
+<main>
+    <div class="login shadow-sm">
+        <form action="">
+            <div class="text-center">
+                <h5 class="fw-bold">خوش آمدید</h5>
+                <p class="small mt-0">جهت ورود اطلاعات خود را وارد کنید</p>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">نام کاربری:</label>
+                <input type="text" class="form-control">
+            </div>
+            <div class="mb-4 position-relative login__password">
+                <label class="form-label">گذرواژه:</label>
+                <input type="password" class="form-control">
+                <i class="fa fa-eye"></i>
+            </div>
+            <div class="login__captcha text-center mb-3 d-flex">
+                <input type="text" name="code" class="form-control" placeholder="پاسخ کپچا">
+                <canvas class="me-2" id="canvas" role="button"></canvas>
+            </div>
+            <div class="d-flex justify-content-between align-items-center small">
+                <a href="#">فراموشی گذرواژه</a>
+                <div class="d-flex">
+                    <input class="form-check-input" type="checkbox" value="" id="remember-me">
+                    <label class="form-check-label me-2" for="remember-me">
+                        بخاطر بسپارید
+                    </label>
+                </div>
+            </div>
+            <div class="mt-4 position-relative">
+                <button id="valid" class="btn btn-success w-100">ورود</button>
+                <hr>
+                <span class="login__or">یا</span>
+                <button  class="btn btn-primary w-100">ثبت نام</button>
+            </div>
+        </form>
+    </div>
+</main>
+<script src="https://code.jquery.com/jquery-1.12.4.min.js" integrity="sha384-nvAa0+6Qg9clwYCGGPpDQLVpLNn0fRaROjHqs13t4Ggj3Ez50XnGQqc/r8MhnRDZ" crossorigin="anonymous"></script>
+<script type="text/javascript" src="../../js/alphanumeric-captcha/js/jquery-captcha.js"></script>
+<script>
+    // step-1
+    const captcha = new Captcha($('#canvas'),{
+        length: 4,
+        height:38,
+        width:150,
+        font: 'bold 26px Arial'
+    });
+    // api
+    //captcha.refresh();
+    //captcha.getCode();
+    //captcha.valid("");
+
+    $('#valid').on('click', function() {
+        const ans = captcha.valid($('input[name="code"]').val());
+        alert(ans);
+        captcha.refresh();
+    })
+</script>
+<script>
+
+    document.querySelector(".login__password i").addEventListener("click",(e)=>{
+        const input=document.querySelector(".login__password input")
+        const icon=e.target
+        if(input.type==="text")
+        {
+            icon.classList.remove("fa-eye-slash")
+            icon.classList.add("fa-eye")
+            input.type="password"
+        }
+        else{
+            input.type="text"
+            icon.classList.remove("fa-eye")
+            icon.classList.add("fa-eye-slash")
+        }
+    })
+</script>
+</body>
+</html>

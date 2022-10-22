@@ -1,0 +1,16 @@
+﻿.btn-secondary {
+    visibility: hidden;
+    height: 0 !important;
+}
+
+.tab-visibility {
+    display: none !important;
+}
+
+h3{
+    opacity:0;
+}
+
+.inv-print-btn{
+    display:none;
+}

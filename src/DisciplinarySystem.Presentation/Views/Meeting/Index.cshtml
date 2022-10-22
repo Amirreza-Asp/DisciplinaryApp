@@ -1,0 +1,83 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@using System.Globalization;
+@using PersianTools.Core
+@model DisciplinarySystem.Presentation.Controllers.Meetings.ViewModels.GetAllMeetings
+
+
+
+@section Styles{
+	<link href="~/css/custome/modal.min.css" rel="stylesheet" />
+	<link href="~/css/custome/calender.css" rel="stylesheet" />
+}
+
+	<div class="d-flex align-items-start align-items-sm-center justify-content-between mb-2 flex-column flex-sm-row">
+		<h3>برنامه زمانبندی جلسات</h3>
+	</div>
+	<div class="calender">
+		<div class="container">
+			<!--JAN-->
+			<div class="items">
+				<div class="month d-flex justify-content-center align-items-center" dir="ltr">
+					<a asp-action="Index" class="text-black me-4" asp-route-dir="prev" asp-route-MeetingsDate="@Model.MeetingFilter.MeetingsDate">
+						<i class="far fa-arrow-left"></i>
+					</a>
+					<p>@Model.MeetingFilter.MeetingsDate.GetShamsiYear() @Model.MeetingFilter.MeetingsDate.GetShamsiMonthName()</p>
+					<a asp-action="Index" class="text-black ms-4" asp-route-dir="next" asp-route-MeetingsDate="@Model.MeetingFilter.MeetingsDate">
+						<i class="far fa-arrow-right"></i>
+					</a>
+				</div>
+				<div class="week">
+					<p>شنبه</p>
+					<p>یک شنبه</p>
+					<p>دو شنبه</p>
+					<p>سه شنبه</p>
+					<p>چهار شنبه</p>
+					<p>پنج شنبه</p>
+					<p>جمعه</p>
+				</div>
+				<div class="day mt-1">
+					@{
+					int day = Model.MeetingFilter.MeetingsDate.DayOfWeekNumber();
+					int lastMonthDay = Model.MeetingFilter.MeetingsDate.AddMonths(-1).GetMonthDays();
+					for (int i = 1; i < day; i++)
+					{
+						<p class="text-muted"><span>@(lastMonthDay - day + i + 1)</span></p>
+
+					}
+				}
+
+				@for (int i = 1; i <= Model.MeetingFilter.MeetingsDate.GetMonthDays(); i++)
+				{
+					PersianCalendar pc = new PersianCalendar();
+					var modelDate = Model.MeetingFilter.MeetingsDate;
+					var dateTime = pc.AddDays(modelDate, (i - 1));
+					var d = new PersianDateTime(dateTime.ToShamsi());
+
+					@if (d.IsHoliDay)
+					{
+						<p class="text-danger"><span>@i</span></p>
+					}
+					else if (Model.Meetings.Any(u => u.HoldingTime.From.Date.Equals(dateTime.Date)))
+					{
+
+						<a asp-action="GetAll" asp-route-MeetingsDate="@Model.MeetingFilter.MeetingsDate.AddDays(i-1)">
+							<p class="calender-day has-meeting"><span>@i</span></p>
+						</a>
+					}
+					else
+					{
+						<a asp-action="GetAll" asp-route-MeetingsDate="@Model.MeetingFilter.MeetingsDate.AddDays(i-1)">
+							<p class="calender-day"><span>@i</span></p>
+						</a>
+					}
+				}
+
+			</div>
+		</div>
+	</div>
+</div>
+<div class="backdrop"></div>
+
+@section Scripts{
+	<script src="~/js/calender/calender.js"></script>
+}

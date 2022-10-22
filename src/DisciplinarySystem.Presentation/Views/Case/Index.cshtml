@@ -1,0 +1,70 @@
+﻿@using DisciplinarySystem.Application.Cases.Helpers
+@using DisciplinarySystem.Application.Common
+@model DisciplinarySystem.Presentation.Controllers.Cases.ViewModels.GetCasesListVM
+
+<form method="get" asp-action="Index">
+
+	<div class="d-flex align-items-start align-items-sm-center justify-content-between mb-2 flex-column flex-sm-row">
+		<h3>پرونده انضباطی</h3>
+		<div class="d-flex align-items-center">
+			<a asp-action="Create" class="btn btn--add  d-flex align-items-center"><i class="fa fa-plus ms-2"></i>افزودن پرونده جدید</a>
+			<button type="button" onclick="ShowFilters('complaint-filters')" class="btn btn--filter d-flex align-items-center  me-2"><i class="fa fa-filter ms-2"></i>فیلتر</button>
+		</div>
+
+	</div>
+	<partial name="_FilterPartial" model="Model.Filters">
+		<section class="card">
+			<div class="table-overflow">
+				<div class="table ">
+					<table class="table text-center" width="100%">
+						<thead>
+							<tr>
+								<th>ردیف</th>
+								<th>شماره پرونده</th>
+								<th>شماره دانشجویی</th>
+								<th>نام</th>
+								<th>دانشکده</th>
+								<th>گروه</th>
+								<th>مقطع تحصیلی</th>
+								<th>وضعیت پرونده</th>
+								<th>عملیات</th>
+							</tr>
+						</thead>
+						<tbody>
+							@for (int i = 0; i < Model.Cases.Count(); i++)
+							{
+								<tr>
+									<td>@(i + 1 + Model.Filters.Skip)</td>
+									<td>@Model.Cases[i].Id</td>
+									<td>@Model.Cases[i].StudentNumber</td>
+									<td>@Model.Cases[i].FullName</td>
+									<td>@Model.Cases[i].College</td>
+									<td>@Model.Cases[i].EducationalGroup</td>
+									<td>@Model.Cases[i].Grade</td>
+									<td>@Model.Cases[i].Status</td>
+									<td>
+										<div class="table__action">
+											<a asp-action="FullInformation" asp-route-caseId="@Model.Cases[i].Id" class="btn btn-secondary me-2"><i class="fa fa-download"></i></a>
+											<a class="btn btn--show" asp-action="Details" asp-route-id="@Model.Cases[i].Id"><i class="fa fa-eye"></i></a>
+											<a class="btn btn--edit" asp-controller="Complaint" asp-action="Index" asp-route-caseId="@Model.Cases[i].Id"><i class="fa fa-edit"></i></a>
+											<button type="button" class="btn btn--delete me-2" onclick="Delete('/Case/Remove/@Model.Cases[i].Id' , 'پرونده')"><i class="fa fa-trash"></i></button>
+										</div>
+									</td>
+								</tr>
+							}
+						</tbody>
+					</table>
+				</div>
+			</div>
+
+		</section>
+
+
+		<partial name="_PagenationPartial" model="@Pagenation.Create(Model.Filters.Skip , Model.Filters.Take , Model.TotalCount)" />
+		<div class="backdrop"></div>
+
+</form>
+
+@section Scripts{
+	<script src="~/js/utility/removeAlert.js"></script>
+}

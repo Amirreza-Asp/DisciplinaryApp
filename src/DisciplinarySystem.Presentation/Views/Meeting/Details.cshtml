@@ -1,0 +1,82 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@model DisciplinarySystem.Domain.Meetings.Meeting
+
+@{
+	String startTime = Model.HoldingTime.From.TimeOfDay.ToString().Substring(0, 5);
+	String endTime = Model.HoldingTime.To.TimeOfDay.ToString().Substring(0, 5);
+}
+
+@section Styles{
+	<link rel="stylesheet" href="~/css/custome/timepicker.css" />
+
+	<style>
+		.guest {
+			font-size: 16px;
+			margin: 4px;
+			padding: 12px;
+		}
+	</style>
+}
+
+
+	<div class="d-flex justify-content-end mb-3">
+		<button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+			بازگشت
+			<i class="fa fa-angle-left me-2"></i>
+		</button>
+	</div>
+
+
+	<div class="d-flex flex-column flex-sm-row align-items-sm-center  justify-content-between mb-2">
+		<h3 class="mb-sm-0 mb-4">مشاهده جلسه</h3>
+		<div class="d-flex flex-column flex-sm-row gap-2">
+			<div class="mb-3">
+				<label class="form-label">تاریخ ثبت:</label>
+				<input type="text" value="@Model.CreateDate.ToShamsi()" class="form-control" readonly>
+			</div>
+		</div>
+	</div>
+
+	<div class="card shadow-sm">
+		<section>
+			<h4> افراد حاضر در جلسه:</h4>
+			<div>
+				<div class="row">
+					<div class="guests m-3">
+					@if (Model.MeetingUsers != null)
+					{
+						@foreach (var item in Model.MeetingUsers)
+						{
+							<span class="badge bg-secondary guest">
+								<span>@item.User.FullName</span>
+							</span>
+						}
+					}
+				</div>
+
+			</div>
+		</div>
+	</section>
+	<hr>
+	<section>
+		<div class="row">
+			<div class="mb-3 col-md-4">
+				<label class="form-label">عنوان:</label>
+				<input type="text" asp-for="Title" class="form-control" readonly>
+			</div>
+			<div class="mb-3 col-md-4">
+				<label class="form-label">تاریخ شروع:</label>
+				<input value="@startTime" class="form-control" readonly/>
+			</div>
+			<div class="mb-3 col-md-4">
+				<label class="form-label">تاریخ اتمام:</label>
+				<input value="@endTime" class="form-control" readonly />
+			</div>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">شرح:</label>
+			<textarea class="form-control" rows="5" asp-for="Description" readonly></textarea>
+		</div>
+
+	</section>
+</div>

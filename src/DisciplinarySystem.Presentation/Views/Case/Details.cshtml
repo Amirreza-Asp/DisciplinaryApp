@@ -1,0 +1,84 @@
+﻿@using DisciplinarySystem.Application.Cases.Helpers
+@using DisciplinarySystem.Presentation.Models
+@model DisciplinarySystem.Presentation.Controllers.Cases.ViewModels.CaseDetails
+
+@{
+	var steps = new CaseSteps{CaseId = Model.Case.Id , ActiveStep = "" , OnlySee =Model.OnlySee };
+	<partial name="_CaseStepsPartial"  model="@steps"/>
+}
+
+<div class="d-flex justify-content-end mb-3">
+	<button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+		بازگشت
+		<i class="fa fa-angle-left me-2"></i>
+	</button>
+</div>
+<div class="mb-4">
+	<h3 class="mb-sm-0 mb-4">مشاهده پرونده</h3>
+</div>
+<section class="card mb-1 p-3">
+
+	<div class="row ">
+		<div class="mb-3 col-md-3">
+			<label class="form-label">شماره پرونده:</label>
+			<input type="number" asp-for="Case.Id" id="caseId" class="form-control" readonly>
+		</div>
+		<div class="mb-3 col-md-3">
+			<label class="form-label">وضعیت پرونده:</label>
+			<input value="@Model.Case.Status.ToPersian()" class="form-control" readonly>
+		</div>
+	</div>
+	</section>
+	<section class="card mb-1 p-3">
+	<h4 class="mt-4">مشخصات شاکی:</h4>
+	<div class="row ">
+		<div class="mb-3 col-md-3">
+			<label class="form-label">نام و نام خانوادگی:</label>
+			<input type="text" asp-for="Case.Complaint.Plaintiff.FullName" id="plaintiffFN" class="form-control" readonly>
+		</div>
+		<div class="mb-3 col-md-3">
+			<label class="form-label">کد ملی:</label>
+			<input asp-for="Case.Complaint.Plaintiff.NationalCode.Value" class="form-control" id="plaintiffNC" readonly>
+		</div>
+	</div>
+	</section>
+	<section class="card mb-1 p-3">
+	<h4 class="mt-4">مشخصات متشاکی:</h4>
+
+	<div class="row">
+
+		<div class="mb-3 col-md-3">
+			<label class="form-label">شماره شکایت:</label>
+			<input type="number" asp-for="Case.Complaint.Id" id="comaplintId" class="form-control" readonly>
+		</div>
+		<div class="mb-3 col-md-3">
+			<label class="form-label">شماره دانشجویی:</label>
+			<input asp-for="Case.Complaint.Complaining.StudentNumber.Value" id="studentNumber" class="form-control" readonly>
+		</div>
+		<div class="mb-3 col-md-3">
+			<label class="form-label">کد ملی:</label>
+			<input asp-for="Case.Complaint.Complaining.NationalCode.Value" id="complainingNC" class="form-control" readonly>
+		</div>
+
+		<div class="mb-3 col-md-3">
+			<label class="form-label">نام و نام خانوادگی:</label>
+			<input type="text" id="complainingFN" asp-for="Case.Complaint.Complaining.FullName" class="form-control" readonly>
+		</div>
+		<div class="mb-3 col-md-3">
+			<label class="form-label">نام دانشکده:</label>
+			<input type="text" id="complainingCC" asp-for="Case.Complaint.Complaining.College" class="form-control" readonly>
+		</div>
+
+		<div class="mb-3 col-md-3">
+			<label class="form-label">نام گروه آموزشی:</label>
+			<input type="text" asp-for="Case.Complaint.Complaining.EducationalGroup" id="complainingEG" class="form-control" readonly>
+		</div>
+
+		<div class="mb-3 col-md-3">
+			<label class="form-label">مقطع تحصیلی:</label>
+			<input type="text" asp-for="Case.Complaint.Complaining.Grade" id="complainingGrade" class="form-control" readonly>
+		</div>
+	</div>
+</section>
+
+<div class="backdrop"></div>

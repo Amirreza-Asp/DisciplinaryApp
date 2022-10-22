@@ -1,0 +1,30 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@using DisciplinarySystem.Presentation.Controllers.Defences.ViewModels
+@model DisciplinarySystem.Presentation.Controllers.Defences.ViewModels.DefenceFilter
+
+
+@{
+	String showFilters = Model.IsEmpty() ? "hide" : "";
+	String createDate = Model.CreateDate != default ? Model.CreateDate.ToShamsi() : "";
+}
+
+<input asp-for="CaseId" hidden/>
+
+<section class="my-2 complaints__filter @showFilters" id="defence-filters">
+	<div class="row">
+		<div class="mb-3 col-md-6">
+			<label for="studentNumber" class="form-label">موضوع:</label>
+			<input type="text"  asp-for="Subject" class="form-control" id="studentNumber">
+		</div>
+
+		<div class="mb-3 col-md-6">
+			<label for="firstName" class="form-label">تاریخ دفاعیه:</label>
+			<input id="datepicker" name="CreateDate" value="@createDate" width="100%" class="form-control" />
+		</div>
+
+	</div>
+
+	<div class="text-center">
+		<button type="submit" class="btn btn--submit">اعمال فیلتر</button>
+	</div>
+</section>

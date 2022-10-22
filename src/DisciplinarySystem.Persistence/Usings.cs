@@ -1,0 +1,1 @@
+﻿global using static DisciplinarySystem.Persistence.Meppings.ColumnConstants;

@@ -1,0 +1,50 @@
+﻿@model DisciplinarySystem.Presentation.Controllers.Epistles.ViewModels.EpistleFilter
+@using DisciplinarySystem.Application.Helpers;
+
+@{
+    String showFilters = Model.IsEmpty()  ? "hide" : "";
+    if (Model.CaseId > 0)
+        showFilters = "hide";
+    String createDate = Model.CreateDate != default ? Model.CreateDate.ToShamsi() : "";
+}
+
+<section class="my-3 @showFilters" id="epistle-filters">
+    <div class="row">
+        <div class="mb-3 col-md-3">
+            <label class="form-label">شماره نامه:</label>
+            <input type="number" min="0" asp-for="Id" class="form-control" />
+        </div>
+        <div class="mb-3 col-md-3 pr-5">
+            <label class="form-label">تاریخ نامه:</label>
+            <input id="datepicker" name="CreateDate" value="@createDate" width="100%" class="form-control" />
+        </div>
+
+        <div class="mb-3 col-md-3">
+            <label class="form-label">نوع نامه:</label>
+            <input type="text" asp-for="Type" class="form-control" />
+        </div>
+        <div class="mb-3 col-md-3">
+            <label class="form-label">موضوع:</label>
+            <input type="text" asp-for="Subject" class="form-control" />
+        </div>
+
+        <div class="mb-3 col-md-3">
+            <label class="form-label">فرستنده/گیرنده:</label>
+            <input type="text" asp-for="Sender_Reciver" class="form-control" />
+        </div>
+
+        <div class="mb-3 col-md-3">
+            <label class="form-label">شکایت مرتبط:</label>
+            <input type="number" min="0" asp-for="ComplaintId" class="form-control" />
+        </div>
+
+        <div class="mb-3 col-md-3">
+            <label class="form-label">پرونده مرتبط:</label>
+            <input type="number" min="0" asp-for="CaseId" class="form-control" />
+        </div>
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn--submit">اعمال فیلتر</button>
+    </div>
+</section>

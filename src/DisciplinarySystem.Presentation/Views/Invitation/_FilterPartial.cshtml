@@ -1,0 +1,27 @@
+﻿@model DisciplinarySystem.Presentation.Controllers.Invitations.ViewModels.InvitationFilter;
+@using DisciplinarySystem.Application.Helpers;
+
+@{
+    String showFilters = Model.IsEmpty()  ? "hide" : "";
+    String createDate = Model.CreateDate != default ? Model.CreateDate.ToShamsi() : "";
+}
+
+
+<input asp-for="CaseId" hidden />
+<section class="my-3 @showFilters" id="invitation-filters">
+    <div class="row">
+        <div class="mb-3 col-md-6">
+            <label class="form-label">موضوع:</label>
+            <input asp-for="Subject" class="form-control" />
+        </div>
+        <div class="mb-3 col-md-6 pr-5">
+            <label class="form-label">تاریخ اظهارات:</label>
+            <input id="datepicker" name="CreateDate" value="@createDate" width="100%" class="form-control" />
+        </div>
+
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn--submit">اعمال فیلتر</button>
+    </div>
+</section>

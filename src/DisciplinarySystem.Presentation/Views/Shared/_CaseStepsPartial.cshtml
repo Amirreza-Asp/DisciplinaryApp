@@ -1,0 +1,34 @@
+﻿@model CaseSteps
+
+
+@{
+	List<(String Controller, String Name)> steps = new List<(string, string)>
+	{
+		new ("Complaint" , "شکایات"),
+		new ("Epistle" , "نامه ها"),
+		new ("Violation" , "تخلف ها"),
+		new ("Informed" , "اظهار مطلعین"),
+		new ("Invitation" , "دعوتنامه"),
+		new ("Defence" , "دفاعیات"),
+		new ("PrimaryVote" , "رای اولیه"),
+		new ("Objection" , "اعتراض"),
+		new ("FinalVote" , "حکم نهایی"),
+		new ("CentralCommitteeVote" , "حکم کمیته مرکزی"),
+		new ("RelatedInfo" , "اطلاعات مرتبط"),
+	};
+}
+
+<div class="tab-visibility">
+	<div class="tab d-flex mb-4">
+		<div class="tab__list">
+			@foreach (var step in steps)
+			{
+				String classes = Model.ActiveStep == step.Controller ? "tab__item tab__item--active dec-font" : "tab__item dec-font";
+				<a asp-controller="@step.Controller" asp-action="Index" asp-route-onlySee="@Model.OnlySee" asp-route-caseId="@Model.CaseId" class="@classes">
+					@step.Name
+				</a>
+			}
+		</div>
+	</div>
+	<hr />
+</div>

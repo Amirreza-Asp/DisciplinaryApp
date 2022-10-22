@@ -1,0 +1,90 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@using DisciplinarySystem.Presentation.Models
+@model DisciplinarySystem.Presentation.Controllers.Informants.ViewModels.GetInformants
+
+@section Styles{
+	<link href="~/css/persianDateTime/kendo.common.min.css" rel="stylesheet" />
+	<link href="~/css/persianDateTime/kendo.default.min.css" rel="stylesheet" />
+	<link href="~/css/persianDateTime/custom.input.css" rel="stylesheet" />
+}
+
+	@{
+	var step = new CaseSteps { CaseId = Model.Filters.CaseId, ActiveStep = "Informed" , OnlySee = Model.Filters.OnlySee };
+	<partial name="_CaseStepsPartial" model="@step" />
+}
+
+<div class="d-flex align-items-start align-items-sm-center justify-content-between mb-2 flex-column flex-sm-row">
+	<h3>اظهارات</h3>
+	<div class="d-flex align-items-center">
+		@if (!Model.Filters.OnlySee)
+		{
+			<a asp-action="Create" asp-route-caseId="@Model.Filters.CaseId" class="btn btn--add d-flex align-items-center">
+				<i class="fa fa-plus ms-2"></i>افزودن اظهار
+				جدید
+			</a>
+		}
+		<button onclick="ShowFilters('informed-filters')" class="btn btn--filter d-flex align-items-center  me-2">
+			<i class="fa fa-filter ms-2"></i>فیلتر
+		</button>
+	</div>
+
+</div>
+
+
+<form method="get">
+	<partial name="_FilterPartial" model="@Model.Filters" />
+
+	<div class="table-overflow card shadow-sm">
+		<div class="table ">
+			<table class="table text-center" width="100%">
+				<thead>
+					<tr>
+						<th>ردیف</th>
+						<th>نام و نام خانوادگی</th>
+						<th>عنوان</th>
+						<th>تاریخ ایجاد</th>
+						<th>عملیات</th>
+					</tr>
+				</thead>
+				<tbody>
+					@for (int i = 0; i < Model.Informants.Count(); i++)
+					{
+						<tr>
+							<td>@(i + 1 + Model.Filters.Skip)</td>
+							<td>@Model.Informants.ElementAt(i).FullName</td>
+							<td>@Model.Informants.ElementAt(i).Subject</td>
+							<td>@Model.Informants.ElementAt(i).CreateDate.ToShamsi()</td>
+							<td>
+								<div class="table__action">
+									<a class="btn btn--show" asp-action="Details" asp-route-id="@Model.Informants.ElementAt(i).Id"><i class="fa fa-eye"></i></a>
+									@if (!Model.Filters.OnlySee)
+									{
+										<a class="btn btn--edit" asp-action="Update" asp-route-id="@Model.Informants.ElementAt(i).Id"><i class="fa fa-edit"></i></a>
+										<button type="button" class="btn btn--delete me-2" onclick="Delete('/Informed/Remove/@Model.Informants.ElementAt(i).Id' , 'اظهار')"><i class="fa fa-trash"></i></button>
+									}
+								</div>
+							</td>
+						</tr>
+					}
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<partial name="_PagenationPartial" model="@Pagenation.Create(Model.Filters.Skip , Model.Filters.Take , Model.TotalCount)" />
+</form>
+
+@section Scripts{
+	<script src="~/js/utility/removeAlert.js"></script>
+	<script src="~/js/utility/pagenation.js"></script>
+	<script src="~/js/persianDateTime/jquery-1.9.1.min.js"></script>
+	<script src="~/js/persianDateTime/jquery.min.js"></script>
+	<script src="~/js/persianDateTime/JalaliDate.js"></script>
+	<script src="~/js/persianDateTime/kendo.web.js"></script>
+	<script src="~/js/persianDateTime/fa-IR.js"></script>
+	<script>
+		$(document).ready(function () {
+			$("#datepicker").kendoDatePicker();
+		});
+	</script>
+}

@@ -1,0 +1,246 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@using DisciplinarySystem.Presentation.Models
+@model DisciplinarySystem.Application.Invitations.ViewModels.CreateInvitation
+
+
+@section Styles{
+	<link rel="stylesheet" href="~/lib/persian-web-toolkit/persian-datepicker/dist/css/persian-datepicker.css" />
+	<style>
+		.guest {
+			font-size: 16px;
+			margin: 4px;
+			padding: 12px;
+		}
+		.show-calender{
+			border-radius:0 5px 5px 0;
+		}
+		#inlineExampleAlt{
+			border-radius:5px 0 0 5px;
+		}
+		.hide{
+			display:none;
+		}
+	</style>
+
+}
+
+
+	@{
+	var step = new CaseSteps { CaseId = Model.CaseId, ActiveStep = "Invitation" };
+	<partial name="_CaseStepsPartial" model="@step" />
+}
+
+
+<div class="d-flex justify-content-end mb-3">
+	<button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+		بازگشت
+		<i class="fa fa-angle-left me-2"></i>
+	</button>
+</div>
+
+
+<form method="post" enctype="multipart/form-data">
+
+	<input type="text" value="" name="PersonsId" id="persons-id-input" hidden>
+	<div class="d-flex flex-column flex-sm-row align-items-sm-center  justify-content-between mb-2">
+		<h3 class="mb-sm-0 mb-4">افزودن دعوتنامه</h3>
+		<div class="d-flex flex-column flex-sm-row gap-2">
+			<div class="mb-3">
+				<label class="form-label">شماره پرونده:</label>
+				<input type="text" asp-for="CaseId" class="form-control"
+					   readonly>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">تاریخ ثبت:</label>
+				<input type="text" value="@DateTime.Now.ToShamsi()" class="form-control" readonly>
+			</div>
+		</div>
+	</div>
+
+	<div class="card shadow-sm">
+		<section>
+			<h4>مدعوین:</h4>
+			<div>
+				<div class="row">
+					<div class="d-flex flex-column flex-sm-row">
+						<div class="col-md-4">
+							<label class="form-label">نام و نام خانوادگی:</label>
+							<div class="dropdown">
+								<select asp-items="@Model.Persons" class="form-control" id="guest-fullName"></select>
+							</div>
+							<span class="text-danger" id="invite-persons-warning" style="visibility:hidden;">مدعوین را وارد کنید</span>
+
+						</div>
+						<button type="button" onclick="guests()" class="btn btn--add me-2 align-self-center mt-2 w-sm-100">
+							افزودن
+						</button>
+					</div>
+					<div class="guests m-3">
+					</div>
+				</div>
+			</div>
+		</section>
+		<hr>
+		<section>
+			<div class="row">
+				<div class="mb-3 col-md-6">
+					<label class="form-label">موضوع:</label>
+					<input type="text" asp-for="Subject" class="form-control">
+					<span asp-validation-for="Subject" class="text-danger"></span>
+				</div>
+				<div class="mb-3 col-md-6">
+					<label class="form-label">تاریخ دعوت</label>
+					<div class="d-flex">
+						<button type="button" class="btn btn-secondary show-calender" onclick="$('.inline-example').toggleClass('hide')">
+							<i class='fas fa-calendar-alt'></i>
+						</button>
+						<input id="inlineExampleAlt" name="InviteDate" class="form-control" />
+					</div>
+					@if (String.IsNullOrEmpty(Model.InviteDate))
+					{
+						<div class="inline-example hide"></div>
+					}
+					else
+					{
+						<div class="inline-example hide" data-date="@Model.InviteDate"></div>
+					}
+					<span class="text-danger" asp-validation-for='InviteDate'></span>
+				</div>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">شرح:</label>
+				<textarea class="form-control" asp-for="Description" rows="10"></textarea>
+				<span asp-validation-for="Description" class="text-danger"></span>
+			</div>
+			<div class="mt-3">
+				<label for="file">
+					<span role="button" id="file-btn" class="btn btn--upload-file">
+						بارگذاری مستندات
+					</span>
+					<input type="file" asp-for="Documents" id="file" hidden multiple />
+				</label>
+			</div>
+		</section>
+	</div>
+
+	<div class="mt-3 text-center">
+		<button onclick="SubmitClick(event)" class="btn btn--submit">
+			ثبت
+		</button>
+	</div>
+</form>
+@section Scripts{
+	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/utility/showFiles.js"></script>
+	<script src="~/lib/persian-web-toolkit/persian-date/dist/persian-date.min.js"></script>
+	<script src="~/lib/persian-web-toolkit/persian-datepicker/dist/js/persian-datepicker.min.js"></script>
+	<script>
+		function guests() {
+			var e = document.getElementById("guest-fullName");
+			var value = e.value;
+			var text = e.options[e.selectedIndex].text;
+
+			let optgroup = removeOptions(value);
+
+			const parent = document.querySelector(".guests")
+			const fullName = text
+			const element = document.createElement("span")
+			const elementParent = document.createElement("span")
+			const icon = document.createElement("i")
+
+			elementParent.addEventListener("click", (e) => {
+				addOption(elementParent)
+				e.currentTarget.remove()
+			})
+
+			elementParent.classList.add("badge", "bg-primary", "guest")
+			icon.classList.add("fa", "fa-times", "ms-2")
+			element.textContent = fullName
+			elementParent.setAttribute("optgroup", optgroup);
+			elementParent.setAttribute("value", value);
+
+			elementParent.appendChild(element)
+			elementParent.insertBefore(icon, element)
+			parent.appendChild(elementParent)
+		}
+
+		function removeOptions(value) {
+			let opt;
+
+			var select = document.getElementById("guest-fullName");
+			Array.from(select.children).forEach(optgroup => {
+				Array.from(optgroup.children).forEach(option => {
+					if (option.value === value) {
+						opt = optgroup.getAttribute("label");
+						option.remove();
+					}
+				})
+			})
+
+			return opt;
+		}
+
+		function addOption(e) {
+			var select = document.getElementById("guest-fullName");
+			const option = document.createElement("option");
+			option.value = e.getAttribute("value")
+			option.innerHTML = e.children[1].innerHTML;
+
+			Array.from(select.children).forEach(item => {
+				if (item.getAttribute("label") === e.getAttribute("optgroup"))
+					item.appendChild(option)
+			})
+		}
+
+		function SubmitClick(e) {
+			const parent = document.querySelector(".guests");
+
+			if (parent.children.length == 0) {
+				document.getElementById("invite-persons-warning").setAttribute("style", "visibility:visible");
+				e.preventDefault();
+			}
+
+
+			let str = "["
+
+			Array.from(parent.children).forEach(item => {
+				let optgroup = item.getAttribute("optgroup");
+				let id = item.getAttribute("value");
+
+				str += `{optgroup : '${optgroup}' , id : "${id}"},`;
+			})
+
+			str = str.slice(0, str.length - 1);
+			str += "]";
+
+			const input = document.getElementById("persons-id-input");
+			input.value = str;
+		}
+
+	</script>
+	<script>
+		$('.inline-example').persianDatepicker({
+			inline: true,
+			altField: '#inlineExampleAlt',
+			altFormat: 'LLLL',
+			toolbox: {
+				calendarSwitch: {
+					enabled: true
+				}
+			},
+			navigator: {
+				scroll: {
+					enabled: false
+				}
+			},
+			maxDate: new persianDate().add('month', 3).valueOf(),
+			minDate: new persianDate().subtract('month', 3).valueOf(),
+			timePicker: {
+				enabled: true,
+				meridiem: {
+					enabled: true
+				}
+			}
+		});
+	</script>
+}

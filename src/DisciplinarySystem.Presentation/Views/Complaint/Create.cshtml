@@ -1,0 +1,122 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@model DisciplinarySystem.Application.Complaints.ViewModels.Create.CreateComplaint
+
+<div class="d-flex justify-content-end mb-3">
+	<button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+		بازگشت
+		<i class="fa fa-angle-left me-2"></i>
+	</button>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+
+	<div class="d-flex flex-column flex-sm-row align-items-sm-center  justify-content-between mb-3">
+		<h3 class="mb-sm-0 mb-4">ثبت شکایت</h3>
+		<div>
+			<div class="row">
+				<div class="mb-3 col-md-4">
+				</div>
+				<div class="mb-3 col-md-8">
+					<label for="plaintiff-date" class="form-label">تاریخ ثبت:</label>
+					<input dir="ltr" type="text" value="@DateTime.Now.ToShamsi()" class="form-control" id="plaintiff-date" readonly>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	 <section class="card">
+        <div>
+            <h4 class="mt-4">مشخصات شاکی:</h4>
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">نام و نام خانوادگی:</label>
+                    <input type="text" asp-for="Plaintiff.FullName" class="form-control">
+                    <span class="text-danger" asp-validation-for="Plaintiff.FullName"></span>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">شماره تماس:</label>
+                    <input asp-for="Plaintiff.PhoneNumber" class="form-control">
+                    <span class="text-danger" asp-validation-for="Plaintiff.PhoneNumber"></span>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">کد ملی:</label>
+                    <input asp-for="Plaintiff.NationalCode" class="form-control" />
+                    <span class="text-danger" asp-validation-for="Plaintiff.NationalCode"></span>
+                </div>
+                <div class="mb-3 col-12">
+                    <label class="form-label">ادرس:</label>
+                    <input type="text" asp-for="Plaintiff.Address" class="form-control">
+                    <span class="text-danger" asp-validation-for="Plaintiff.Address"></span>
+                </div>
+            </div>
+        </div>
+        <div>
+            <h4 class="mt-4">مشخصات متشاکی:</h4>
+            <div class="row">
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">نام و نام خانوادگی:</label>
+                    <input type="text" asp-for="Complaining.FullName" class="form-control" id="complaint-fullName">
+                    <span class="text-danger" asp-validation-for="Complaining.FullName"></span>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">شماره دانشجویی:</label>
+                    <input type="number" asp-for="Complaining.StudentNumber"  class="form-control" id="complaint-studentNumber">
+                    <span class="text-danger" asp-validation-for="Complaining.StudentNumber"></span>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">کد ملی:</label>
+                    <input type="number" asp-for="Complaining.NationalCode" class="form-control"  id="complaint-nationalCode">
+                    <span class="text-danger" asp-validation-for="Complaining.NationalCode"></span>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">نام پدر:</label>
+                    <input asp-for="Complaining.Father" class="form-control" id="complaint-father">
+                    <span class="text-danger" asp-validation-for="Complaining.Father"></span>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">رشته تحصیلی:</label>
+                    <input asp-for="Complaining.College" class="form-control" id="complaint-college">
+                    <span class="text-danger" asp-validation-for="Complaining.College"></span>
+                </div>
+                <div class="mb-3 col-md-4">
+                    <label class="form-label">مقطع تحصیلی:</label>
+                    <input  asp-for="Complaining.Grade" class="form-control"  id="complaint-grade">
+                    <span class="text-danger" asp-validation-for="Complaining.Grade"></span>
+                </div>
+                <div class="mb-3 col-md-6 mt-3">
+                    <label class="form-label">موضوع شکایت:</label>
+                    <input type="text" asp-for="Subject" class="form-control"> 
+                    <span class="text-danger" asp-validation-for="Subject"></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">شرح شکایت:</label>
+                <textarea class="form-control" asp-for="Description" rows="5"></textarea>
+                <span class="text-danger" asp-validation-for="Description"></span>
+            </div>
+
+            <div class="mt-3">
+                <label for="file">
+                    <span role="button" id="file-btn" class="btn btn--upload-file">
+                        بارگذاری مستندات
+                    </span>
+                    <input type="file" asp-for="Documents" id="file" hidden multiple />
+                </label>
+            </div>
+        </div>
+    </section>
+
+	<div class="mt-3 text-center">
+		<button type="submit" class="btn btn--submit">
+			ثبت
+		</button>
+	</div>
+
+
+</form>
+
+@section Scripts{
+    <partial name="_ValidationScriptsPartial" />
+	<script src="~/js/complaint/autoFill.js"></script>
+	<script src="~/js/utility/showFiles.js"></script>
+}

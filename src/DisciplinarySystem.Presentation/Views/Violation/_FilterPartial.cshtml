@@ -1,0 +1,38 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@model DisciplinarySystem.Presentation.Controllers.Violations.ViewModels.ViolationFilters
+
+@{
+	String showFilters = Model.IsEmpty() ? "hide" : "";
+    String createDate = Model.CreateDate != default ? Model.CreateDate.ToShamsi() : "";
+}
+
+
+<section class="my-3 @showFilters" id="violation-filters">
+    <div class="row">
+        <div class="mb-3 col-md-3">
+            <label class="form-label">نوع تخلف:</label>
+            <div class="dropdown">
+            <select class="form-control" asp-for="Category" asp-items="@Model.Categories">
+                <option selected></option>
+            </select>
+            </div>
+        </div>
+        <div class="mb-3 col-md-3 pr-5">
+            <label class="form-label">عنوان تخلف:</label>
+            <input asp-for="Title"  class="form-control" />
+        </div>
+
+        <div class="mb-3 col-md-3 pr-5">
+            <label class="form-label">تاریخ تخلف:</label>
+            <input id="datepicker" name="CreateDate" value="@createDate" width="100%" class="form-control" />
+        </div>
+        <div class="mb-3 col-md-3">
+            <label class="form-label">پرونده مرتبط:</label>
+            <input type="number" asp-for="CaseId" class="form-control" />
+        </div>
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn--submit">اعمال فیلتر</button>
+    </div>
+</section>

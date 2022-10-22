@@ -1,0 +1,26 @@
+﻿[
+  {
+    "outputFile": "wwwroot/css/general/button.css",
+    "inputFile": "wwwroot/css/general/button.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/general/files-table.css",
+    "inputFile": "wwwroot/css/general/files-table.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/main.css",
+    "inputFile": "wwwroot/css/main.scss"
+  },
+  {
+    "outputFile": "wwwroot/lib/toastr/content/toastr.css",
+    "inputFile": "wwwroot/lib/toastr/content/toastr.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/custome/modal.css",
+    "inputFile": "wwwroot/css/custome/modal.scss"
+  },
+  {
+    "outputFile": "wwwroot/css/pages/dashboard.css",
+    "inputFile": "wwwroot/css/pages/dashboard.scss"
+  }
+]

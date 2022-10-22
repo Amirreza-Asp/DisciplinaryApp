@@ -1,0 +1,49 @@
+@import "../abstracts/custom/colors";
+
+@import "../../bootstrap/functions";
+@import "../../bootstrap/variables";
+@import "../../bootstrap/mixins";
+
+.dashboard {
+  .bg-orange{
+    background-color: $orange;
+  }
+  &__info-item {
+    max-width: 17rem;
+  }
+
+  &__info-value {
+    padding-top: 15px;
+  }
+
+  &__meetings {
+
+    max-width: 11rem;
+    .card{
+      background-color: rgb(248,215,208);
+    }
+
+    @include media-breakpoint-down(md){
+      max-width: 50%;
+    }
+    @include media-breakpoint-down(sm){
+      max-width: 100%;
+    }
+
+
+    &-item {
+      padding: 15px;
+
+      & + & {
+        margin-top: 8px;
+      }
+
+      font-size: 16px;
+      background-color: white;
+      color: black;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+}

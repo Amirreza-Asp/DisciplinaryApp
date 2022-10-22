@@ -1,0 +1,167 @@
+﻿@using DisciplinarySystem.SharedKernel
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>سامانه انضباطی</title>
+
+	@*************** Bootstarp ****************@
+	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+
+	@*************** Custom ****************@
+	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/DisciplinarySystem.Presentation.styles.css" asp-append-version="true" />
+	<link rel="stylesheet" href="~/css/main.css" />
+
+
+	@*************** Toastr ****************@
+	<link href="~/lib/toastr/content/toastr.min.css" rel="stylesheet" />
+
+	@*************** Font Awsome ****************@
+	<link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+		  integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+
+
+	@*************** SweetAlert ****************@
+	<link rel="stylesheet" href="~/lib/bootstrap-sweetalert/sweetalert.min.css" />
+
+
+	@await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+
+
+    <header class="header" style="background-color:#1d2028;">
+        <div class="header__dropdown d-flex justify-content-between">
+            <div class="d-flex d-lg-none align-self-center d-flex align-items-center mobile">
+                <img class="header__logo rounded-circle" src="~/files/app/discipline-icon-5.jpg">
+                <span><i class="fa fa-bars me-2"></i></span>
+            </div>
+            <div class="header__title align-items-center d-none d-lg-flex pe-4">
+                <img class="header__logo rounded-circle ms-2" src="~/files/app/discipline-icon-5.jpg">
+                <h4 class="header__title text-center mb-0">سامانه انضباطی</h4>
+            </div>
+            
+            @if ( User != null && User.Identity != null && User.Identity.IsAuthenticated && !String.IsNullOrEmpty(User.Identity.Name) )
+            {
+                <div class="d-flex align-items-center" style="cursor:pointer;" id="dropdown">
+                    <div class="position-relative">
+                        <img class="header__dropdown-profile-image"
+                         src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS54088iJjHpn-y9FCxGAh5NBEdHugwIXewWQ&usqp=CAU"
+                         alt="">
+                        <span>
+                            <span class="mx-1"> @User.Identity.Name</span>
+                            <i class="fa fa-angle-down"></i>
+                        </span>
+                    </div>
+                </div>
+                <div class="header__dropdown-info">
+                    <ul>
+                    <li class="header__dropdown-item">
+                        <a class="header__dropdown-link d-flex align-items-center" asp-controller="Account" asp-action="ChangePassword">
+                            <i class="fa fa-edit ms-2"></i>
+                            تغییر رمز عبور
+                        </a>
+                    </li>
+                    <li class="header__dropdown-item">
+                        <a asp-controller="Account" asp-action="Logout" class="header__dropdown-link d-flex align-items-center">
+                            <i class="fa fa-sign-out ms-2"></i>
+                            خروج
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            }
+        </div>
+    </header>
+
+    @if ( User != null && User.Identity != null && User.Identity.IsAuthenticated && !String.IsNullOrEmpty(User.Identity.Name) )
+    {
+        <aside class="sidebar">
+            <div class="sidebar__wrapper">
+                <ul class="sidebar__list">
+                    <li class="sidebar__item">
+                        <a class="sidebar__link" asp-area="" asp-controller="Home" asp-action="Index">
+                            داشبورد
+                        </a>
+                    </li>
+                    <li class="sidebar__item "><a class="sidebar__link" asp-area="" asp-controller="Complaint" asp-action="Index">شکایات</a></li>
+                    <li class="sidebar__item"><a class="sidebar__link" asp-area="" asp-controller="Epistle" asp-action="Index">نامه ها</a></li>
+                    <li class="sidebar__item"><a class="sidebar__link" asp-area="" asp-controller="Case" asp-action="Index">پرونده انضباطی</a></li>
+                    <li class="sidebar__item">
+                        <span class="sidebar__collapse">
+                            مدیریت اطلاعات پایه
+                            <i class="fa fa-angle-left"></i>
+                        </span>
+                        <ul class="sidebar__item-collapse" style="max-height: 0px">
+                            <li class="sidebar__item sidebar__item-level-1">
+                                <a class="sidebar__link sidebar__link-level-1" asp-area="" asp-controller="ViolationCategory" asp-action="Index">طبقه بندی تخلفات</a>
+                            </li>
+                            <li class="sidebar__item sidebar__item-level-1">
+                                <a class="sidebar__link sidebar__link-level-1" asp-area="" asp-controller="Verdict" asp-action="Index">طبقه بندی احکام</a>
+                            </li>
+                            @if (User.IsInRole(SD.Managment))
+                            {
+                                <li class="sidebar__item sidebar__item-level-1">
+                                    <a class="sidebar__link sidebar__link-level-1" asp-area="" asp-controller="User" asp-action="Index">تعیین اعضای کمیته</a>
+                                </li>
+                                <li class="sidebar__item sidebar__item-level-1">
+                                    <a class="sidebar__link sidebar__link-level-1" asp-area="" asp-controller="Role" asp-action="Index">تعیین نقش ها</a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                    <li class="sidebar__item"><a class="sidebar__link" asp-area="" asp-controller="Case" asp-action="Inquiry">استعلام پرونده</a></li>
+                    <li class="sidebar__item"><a class="sidebar__link" asp-area="" asp-controller="Meeting" asp-action="Index">تقویم جلسات</a></li>
+
+                    <li class="sidebar__item">
+                        <span class="sidebar__collapse">
+
+                            مدیریت سیستم
+                            <i class="fa fa-angle-left"></i>
+                        </span>
+                        <ul class="sidebar__item-collapse" style="max-height: 0px">
+                            <li class="sidebar__item sidebar__item-level-1">
+                                <a class="sidebar__link sidebar__link-level-1" asp-controller="SMS" asp-action="Send">پنل پیامکی</a>
+                            </li>
+                            <li class="sidebar__item sidebar__item-level-1">
+                                <a class="sidebar__link sidebar__link-level-1" href="#">لاگ گیری</a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </aside>
+
+        <main class="main">
+            <partial name="_NotificationsPartial" />
+		@RenderBody()
+	</main>
+    }
+    else
+    {
+        <partial name="_NotificationsPartial" />
+        <div style="margin-top:110px;">
+            @RenderBody()
+        </div>
+    }
+
+	@*************** Sidebar Js ****************@
+	<script src="~/js/sidebar.js"></script>
+
+	@*************** Jquery ****************@
+	<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+	@*************** Bootstarp ****************@
+	<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+	@***************** SweetAlert **************@
+	<script src="~/lib/bootstrap-sweetalert/sweetalert.min.js"></script>
+
+	@*************** Custom ****************@
+	<script src="~/js/site.js" asp-append-version="true"></script>
+
+	@await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

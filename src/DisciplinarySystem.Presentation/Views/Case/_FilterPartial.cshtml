@@ -1,0 +1,54 @@
+﻿@model DisciplinarySystem.Presentation.Controllers.Cases.ViewModels.CaseFilters
+
+@{
+	String showFilters = Model.IsEmpty() ? "hide" : "";
+}
+
+<section class="my-3 @showFilters" id="complaint-filters">
+	<div class="row">
+		<div class="mb-3 col-md-3">
+			<label class="form-label">شماره پرونده:</label>
+			<input type="number" asp-for="Id" class="form-control">
+		</div>
+		<div class="mb-3 col-md-3">
+			<label class="form-label">شماره دانشجویی:</label>
+			<input asp-for="StudentNumber" class="form-control">
+		</div>
+		<div class="mb-3 col-md-3">
+			<label class="form-label">کد ملی:</label>
+			<input asp-for="NationalCode" class="form-control">
+		</div>
+
+		<div class="mb-3 col-md-3">
+			<label class="form-label">نام و نام خانوادگی:</label>
+			<input type="text" asp-for="Name" class="form-control">
+		</div>
+
+		<div class="mb-3 col-md-3">
+			<label class="form-label">نام دانشکده:</label>
+			<input type="text" asp-for="College" class="form-control">
+		</div>
+
+		<div class="mb-3 col-md-3">
+			<label class="form-label">نام گروه آموزشی:</label>
+			<input type="text" asp-for="EducationalGroup" class="form-control">
+		</div>
+
+		<div class="mb-3 col-md-3">
+			<label class="form-label">مقطع تحصیلی:</label>
+			<input type="text" asp-for="Grade" class="form-control">
+		</div>
+		<div class="mb-3 col-md-3">
+			<label class="form-label">وضعیت پرونده:</label>
+			<div class="dropdown">
+				<select class="form-control" asp-for="Status" asp-items="@Model.StatusList">
+					<option selected></option>
+				</select>
+			</div>
+		</div>
+	</div>
+
+	<div class="text-center">
+		<button type="submit" class="btn btn--submit">اعمال فیلتر</button>
+	</div>
+</section>

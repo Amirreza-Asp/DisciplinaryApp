@@ -1,0 +1,116 @@
+﻿@model DisciplinarySystem.Application.Cases.ViewModels.CreateCase
+
+
+<div class="d-flex justify-content-end mb-3">
+	<button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+		بازگشت
+		<i class="fa fa-angle-left me-2"></i>
+	</button>
+</div>
+<div class="mb-4">
+	<h3 class="mb-sm-0 mb-4">ثبت پرونده</h3>
+</div>
+<form method="post">
+	<section class="card p-3 mb-1">
+		<div class="mb-3 col-md-3">
+				<label class="form-label">شماره شکایت:</label>
+				<input type="number" asp-for="ComplaintId" id="complaintId" class="form-control">
+		</div>
+	</section>
+	<section class="card p-3 mb-1">
+	<h4 class="mt-4">مشخصات شاکی:</h4>
+
+		<div class="row ">
+			<div class="mb-3 col-md-4">
+				<label class="form-label">نام و نام خانوادگی:</label>
+				<input type="text" asp-for="PlaintiffFullName" id="plaintiffFN" class="form-control">
+			</div>
+			<div class="mb-3 col-md-4">
+				<label class="form-label">کد ملی:</label>
+				<input asp-for="PlaintiffNationalCode" class="form-control" id="plaintiffNC">
+			</div>
+			<div class="mb-3 col-md-4">
+				<label class="form-label">شماره تلفن:</label>
+				<input asp-for="PlaintiffPhoneNumber" class="form-control" id="plaintiffPN">
+			</div>
+		</div>
+	</section>
+	<section class="card p-3 mb-1">
+	<h4 class="mt-4">مشخصات متشاکی:</h4>
+		<div class="row">
+			
+			<div class="mb-3 col-md-4">
+				<label class="form-label">شماره دانشجویی:</label>
+				<input asp-for="ComplainingStudentId" id="studentNumber" class="form-control">
+			</div>
+			<div class="mb-3 col-md-4">
+				<label class="form-label">کد ملی:</label>
+				<input asp-for="ComplainingNationalCode" id="complainingNC" class="form-control">
+			</div>
+
+			<div class="mb-3 col-md-4">
+				<label class="form-label">نام و نام خانوادگی:</label>
+				<input type="text" id="complainingFN" asp-for="CompliningFullName" class="form-control">
+			</div>
+			<div class="mb-3 col-md-4">
+				<label class="form-label">نام دانشکده:</label>
+				<input type="text" id="complainingCC" asp-for="ComplainingCollege" class="form-control">
+			</div>
+
+			<div class="mb-3 col-md-4">
+				<label class="form-label">نام گروه آموزشی:</label>
+				<input type="text" asp-for="ComplainingEducationGroup" id="complainingEG" class="form-control">
+			</div>
+
+			<div class="mb-3 col-md-4">
+				<label class="form-label">مقطع تحصیلی:</label>
+				<input type="text" asp-for="ComplainingGrade" id="complainingGrade" class="form-control">
+			</div>
+		</div>
+	</section>
+	
+
+	<div class="mt-3 text-center">
+		<button class="btn btn--add">
+			تشکیل پرونده
+		</button>
+	</div>
+	<div class="backdrop"></div>
+</form>
+
+@section Scripts{
+	<partial name="_ValidationScriptsPartial" />
+	<script>
+		const complaintId = document.querySelector("#complaintId");
+		const complainigSN = document.querySelector("#studentNumber");
+		const complainigNC = document.querySelector("#complainingNC");
+		const complainigFN = document.querySelector("#complainingFN");
+		const complainingCC = document.querySelector("#complainingCC");
+		const complainingEG = document.querySelector("#complainingEG");
+		const complainingGrade = document.querySelector("#complainingGrade");
+		const plaintiffFN = document.querySelector("#plaintiffFN");
+		const plaintiffNC = document.querySelector("#plaintiffNC");
+		const plaintiffPN = document.querySelector("#plaintiffPN");
+
+		complaintId.addEventListener("change", () => {
+			$.ajax({
+				url: `/Case/GetInfo/${complaintId.value}`,
+				type: "GET",
+				success: function (data) {
+					if (data.exists) {
+						complainigSN.value = data.data.complainigSN,
+							complainigNC.value = data.data.complainigSN,
+							complainigFN.value = data.data.complainigFN,
+							complainingCC.value = data.data.complainingCC,
+							complainingEG.value = data.data.complainingEG,
+							complainingGrade.value = data.data.complainingGrade,
+							plaintiffFN.value = data.data.plaintiffFN,
+							plaintiffNC.value = data.data.plaintiffNC,
+							plaintiffPN.value = data.data.plaintiffPN
+					}
+				}
+			})
+		})
+
+	</script>
+}

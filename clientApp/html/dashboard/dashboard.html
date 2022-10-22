@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="fa-IR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- FontAwesome CSS -->
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+          integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous"/>
+    <!-- inline css   -->
+    <link rel="stylesheet" href="../../css/main.css">
+
+    <!--  specific styles  -->
+    <link rel="stylesheet" href="../../css/pages/dashboard.css">
+    <!-- title  -->
+    <title>title</title>
+
+</head>
+<body>
+
+<header class="header">
+    <div class="header__dropdown d-flex justify-content-between">
+        <div class="d-flex d-lg-none align-self-center d-flex align-items-center mobile">
+            <span><i class="fa fa-bars fa-lg"></i></span>
+            <img class="header__logo rounded-circle me-2" src="../../images/discipline-icon-5.jpg">
+        </div>
+        <div class="header__title align-items-center d-none d-lg-flex pe-4">
+            <img class="header__logo rounded-circle ms-2" src="../../images/discipline-icon-5.jpg">
+            <h4 class="header__title text-center mb-0">سامانه انضباطی</h4>
+        </div>
+        <div class="d-flex align-items-center" id="dropdown">
+            <div class="position-relative">
+                <img class="header__dropdown-profile-image"
+                     src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS54088iJjHpn-y9FCxGAh5NBEdHugwIXewWQ&usqp=CAU"
+                     alt="">
+                <span>
+                    <span class="ms-1"> حمزه بهرامی</span>
+                         <i class="fa fa-angle-down"></i>
+                </span>
+            </div>
+        </div>
+        <div class="header__dropdown-info">
+            <ul>
+                 <li class="header__dropdown-item">
+                    <a class="header__dropdown-link d-flex align-items-center" href="#">
+                        <i class="fa fa-edit ms-2"></i>
+                        ویرایش حساب کاربری
+                    </a>
+                </li>
+                <li class="header__dropdown-item">
+                    <a class="header__dropdown-link d-flex align-items-center" href="#">
+                        <i class="fa fa-key ms-2"></i>
+                        تغییر رمز عبور
+                    </a>
+                </li>
+                <li class="header__dropdown-item">
+                    <a class="header__dropdown-link d-flex align-items-center" href="#">
+                        <i class="fa fa-sign-out ms-2"></i>
+                        خروج از حساب کاربری
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</header>
+
+<aside class="sidebar">
+    <div class="sidebar__wrapper">
+        <ul class="sidebar__list">
+            <li class="sidebar__item"><a class="sidebar__link active" href="#">داشبورد</a></li>
+            <li class="sidebar__item "><a class="sidebar__link" href="#">شکایات</a></li>
+            <li class="sidebar__item"><a class="sidebar__link" href="#">نامه ها</a></li>
+            <li class="sidebar__item"><a class="sidebar__link" href="#">پرونده انضباطی</a></li>
+            <li class="sidebar__item">
+                <a class="sidebar__collapse" href="#">
+                    مدیریت اطلاعات پایه
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                <ul class="sidebar__item-collapse" style="max-height: 0px">
+                    <li class="sidebar__item sidebar__item-level-1">
+                        <a class="sidebar__link sidebar__link-level-1" href="#">طبقه بندی تخلفات</a></li>
+                    <li class="sidebar__item sidebar__item-level-1">
+                        <a class="sidebar__link sidebar__link-level-1" href="#">طبقه بندی احکام</a></li>
+                    <li class="sidebar__item sidebar__item-level-1">
+                        <a class="sidebar__link sidebar__link-level-1" href="#">تعیین اعضای کمیته</a></li>
+                    <li class="sidebar__item sidebar__item-level-1">
+                        <a class="sidebar__link sidebar__link-level-1" href="#">طبقه بندی مستندات</a></li>
+                </ul>
+            </li>
+            <li class="sidebar__item"><a class="sidebar__link" href="#">استعلام پرونده</a></li>
+            <li class="sidebar__item"><a class="sidebar__link" href="#">اطلاعیه</a></li>
+            <li class="sidebar__item"><a class="sidebar__link" href="#">تقویم جلسات</a></li>
+
+            <li class="sidebar__item">
+                <a class="sidebar__collapse" href="#">
+
+                    مدیریت سیستم
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                <ul class="sidebar__item-collapse" style="max-height: 0px">
+                    <li class="sidebar__item sidebar__item-level-1">
+                        <a class="sidebar__link sidebar__link-level-1" href="#">پنل پیامکی</a></li>
+                    <li class="sidebar__item sidebar__item-level-1">
+                        <a class="sidebar__link sidebar__link-level-1" href="#">لاگ گیری</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div></aside>
+
+<main class="main ">
+    <div class="d-flex align-items-start align-items-sm-center justify-content-between mb-2 flex-column flex-sm-row">
+        <h3>داشبورد</h3>
+    </div>
+    <div class="dashboard">
+        <div class="dashboard__info text-center row gap-2 justify-content-center align-items-center mx-auto">
+            <div class="card shadow-sm dashboard__info-item bg-primary text-white">
+                <h5>تعداد کل پرونده ها</h5>
+                <span class="dashboard__info-value fw-bold">
+                    12
+                </span>
+            </div>
+            <div class="card shadow-sm dashboard__info-item bg-success text-white">
+                <h5>تعداد پرونده های جاری</h5>
+                <span class="dashboard__info-value fw-bold">
+                    12
+                </span>
+            </div>
+            <div class="card shadow-sm dashboard__info-item bg-orange text-white">
+                <h5>تعداد پرونده های خاتمه یافته</h5>
+                <span class="dashboard__info-value fw-bold">
+                    12
+                </span>
+            </div>
+        </div>
+        <div class="row text-center g-2 mt-3">
+            <div class="dashboard__meetings">
+                <div class="card h-100">
+                    <h5>جلسات امروز</h5>
+                    <div class="badge fw-bold dashboard__meetings-item h-100"><span>8 تا 9</span></div>
+                    <div class="badge fw-bold dashboard__meetings-item h-100"><span>8 تا 9</span></div>
+                    <div class="badge fw-bold dashboard__meetings-item h-100"><span>8 تا 9</span></div>
+                </div>
+            </div>
+            <div class="dashboard__meetings">
+                <div class="card h-100">
+                    <h5>جلسات فردا</h5>
+                    <div class="badge fw-bold dashboard__meetings-item h-100"><span>8 تا 9</span></div>
+                </div>
+            </div>
+        </div>
+        <div class="chart mt-3">
+            <h3>charts</h3>
+        </div>
+    </div>
+    <div class="backdrop"></div>
+</main>
+
+<script src="../../js/main.js"></script>
+
+</body>
+</html>

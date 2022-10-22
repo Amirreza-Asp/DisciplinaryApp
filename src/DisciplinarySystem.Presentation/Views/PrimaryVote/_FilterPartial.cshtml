@@ -1,0 +1,39 @@
+﻿@model DisciplinarySystem.Presentation.Controllers.PrimaryVotes.ViewModels.PrimaryVoteFilter
+@using DisciplinarySystem.Application.Helpers;
+
+@{
+    String showFilters = Model.IsEmpty()  ? "hide" : "";
+    String createDate = Model.CreateTime != default ? Model.CreateTime.ToShamsi() : "";
+}
+
+
+<input asp-for="CaseId" hidden />
+<section class="my-3 @showFilters" id="primary-vote-filters">
+    <div class="row">
+        <div class="mb-3 col-md-4">
+            <label class="form-label">رای:</label>
+			<div class="dropdown">
+				<select class="form-control" asp-for="ViolationId" asp-items="@Model.Violatons">
+					<option selected></option>
+				</select>
+			</div>
+        </div>
+        <div class="mb-3 col-md-4">
+            <label class="form-label">حکم:</label>
+            <div class="dropdown">
+            <select asp-for="VerdictId" asp-items="@Model.Verdicts" class="form-control" >
+                <option></option>
+            </select>
+            </div>
+        </div>
+        <div class="mb-3 col-md-4 pr-5">
+            <label class="form-label">تاریخ رای:</label>
+            <input id="datepicker" name="CreateTime" value="@createDate" width="100%" class="form-control" />
+        </div>
+
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn--submit">اعمال فیلتر</button>
+    </div>
+</section>

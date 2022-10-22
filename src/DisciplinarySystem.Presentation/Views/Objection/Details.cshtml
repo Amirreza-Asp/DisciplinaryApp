@@ -1,0 +1,90 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@using DisciplinarySystem.Presentation.Models
+@model DisciplinarySystem.Domain.Objections.Objection
+
+
+@{
+	var steps = new CaseSteps { CaseId = Model.CaseId, ActiveStep = "Objection" };
+	<partial name="_CaseStepsPartial" model="@steps" />
+}
+
+<div class="d-flex justify-content-end mb-3">
+	<button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+		بازگشت
+		<i class="fa fa-angle-left me-2"></i>
+	</button>
+</div>
+
+
+<div class="d-flex flex-column flex-md-row align-items-md-center  justify-content-between mb-2">
+	<h3 class="mb-4 mb-lg-0">مشاهده اعتراض</h3>
+	<div class="d-flex gap-1 flex-column flex-sm-row">
+		<div>
+			<label class="form-label">شماره پرونده:</label>
+			<input class="form-control" asp-for="CaseId" readonly>
+		</div>
+		<div>
+			<label class="form-label">تاریخ ثبت:</label>
+			<input type="text" value="@Model.CreateDate.ToShamsi()" class="form-control" readonly>
+		</div>
+	</div>
+</div>
+
+<div class="card shadow-sm">
+	<section class="row">
+		<div class="mb-3 col-md-4">
+			<label class="form-label">موضوع:</label>
+			<input type="text" class="form-control" asp-for="Subject" readonly>
+		</div>
+		<div class="mb-3 col-md-4">
+			<label class="form-label">نتیجه:</label>
+			<input class="form-control" value="@Model.Result" readonly />
+		</div>
+		<div class="mb-3">
+			<label class="form-label">شرح:</label>
+			<textarea class="form-control" rows="5" asp-for="Description" readonly></textarea>
+		</div>
+	</section>
+</div>
+
+@if (Model.Documents != null && Model.Documents.Count() > 0)
+{
+	<div>
+		<h4 class="mt-4">مدارک:</h4>
+		<div class="table-overflow">
+			<div class="table ">
+				<table class="table text-center" width="100%">
+					<thead>
+						<tr>
+							<th>عنوان مدرک</th>
+							<th>تاریخ ارسال</th>
+							<th>عملیات</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model.Documents)
+						{
+							<tr>
+								<td>@item.Name</td>
+								<td>@item.SendTime.ToShamsi()</td>
+								<td>
+									<div class="table__action">
+										<a class="btn btn--show mx-2" asp-action="Download" asp-route-fileName="@item.Name" asp-route-file="@item.File.Name">
+											<i class="fa fa-download"></i>
+										</a>
+									</div>
+								</td>
+							</tr>
+						}
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+
+@section Scripts{
+	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/utility/showFiles.js"></script>
+}

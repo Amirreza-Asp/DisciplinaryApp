@@ -1,0 +1,35 @@
+﻿@model DisciplinarySystem.Presentation.Controllers.Informants.ViewModels.InformedFilter;
+@using DisciplinarySystem.Application.Helpers;
+
+@{
+    String showFilters = Model.IsEmpty()  ? "hide" : "";
+    if (Model.CaseId > 0)
+        showFilters = "hide";
+    String createDate = Model.CreateDate != default ? Model.CreateDate.ToShamsi() : "";
+}
+
+<section class="my-3 @showFilters" id="informed-filters">
+    <div class="row">
+        <div class="mb-3 col-md-3">
+            <label class="form-label">نام و نام خانوادگی:</label>
+            <input asp-for="FullName" class="form-control" />
+        </div>
+        <div class="mb-3 col-md-3 pr-5">
+            <label class="form-label">تاریخ اظهارات:</label>
+            <input id="datepicker" name="CreateDate" value="@createDate" width="100%" class="form-control" />
+        </div>
+
+        <div class="mb-3 col-md-3">
+            <label class="form-label">موضوع:</label>
+            <input asp-for="Subject" class="form-control" />
+        </div>
+        <div class="mb-3 col-md-3">
+            <label class="form-label">شماره پرونده:</label>
+            <input asp-for="CaseId" class="form-control" />
+        </div>
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn--submit">اعمال فیلتر</button>
+    </div>
+</section>

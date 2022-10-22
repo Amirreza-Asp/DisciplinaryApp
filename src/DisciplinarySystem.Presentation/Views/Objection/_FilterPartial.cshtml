@@ -1,0 +1,36 @@
+﻿@model DisciplinarySystem.Presentation.Controllers.Objections.ViewModels.ObjectionFilter;
+@using DisciplinarySystem.Application.Helpers;
+@using DisciplinarySystem.Presentation.Controllers.Objections.ViewModels
+
+@{
+    String showFilters = Model.IsEmpty()  ? "hide" : "";
+    String createDate = Model.CreateDate != default ? Model.CreateDate.ToShamsi() : "";
+}
+
+
+<input asp-for="CaseId" hidden />
+<section class="my-3 @showFilters" id="objection-filters">
+    <div class="row">
+        <div class="mb-3 col-md-4">
+            <label class="form-label">موضوع:</label>
+            <input asp-for="Subject" class="form-control" />
+        </div>
+        <div class="mb-3 col-md-4">
+            <label class="form-label">حکم:</label>
+            <div class="dropdown">
+            <select asp-for="Result" asp-items="@ObjectionResults.GetSelectResults()" class="form-control" >
+                <option></option>
+            </select>
+            </div>
+        </div>
+        <div class="mb-3 col-md-4 pr-5">
+            <label class="form-label">تاریخ اعتراض:</label>
+            <input id="datepicker" name="CreateDate" value="@createDate" width="100%" class="form-control" />
+        </div>
+
+    </div>
+
+    <div class="text-center">
+        <button type="submit" class="btn btn--submit">اعمال فیلتر</button>
+    </div>
+</section>

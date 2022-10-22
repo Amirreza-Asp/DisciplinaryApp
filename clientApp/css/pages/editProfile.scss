@@ -1,0 +1,40 @@
+.profile {
+  &__tab {
+    border-bottom: 3px solid #bdbdbd;
+    min-width: max-content;
+
+    &-item {
+      padding: 0 20px 10px 20px;
+      position: relative;
+
+      a {
+        color: black;
+      }
+
+      &--active {
+        a {
+          color: #0F72FC;
+        }
+        &::after {
+          content: "";
+          position: absolute;
+          top: 100%;
+          height: 3px;
+          right: 0;
+          width: 100%;
+          background-color: #0F72FC;
+        }
+      }
+    }
+  }
+
+  &__edit {
+    &-image img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 2px solid #0F72FC;
+      padding: 5px;
+    }
+  }
+}

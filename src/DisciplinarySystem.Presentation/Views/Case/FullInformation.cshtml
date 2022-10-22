@@ -1,0 +1,178 @@
+﻿@model DisciplinarySystem.Domain.DisciplinaryCase.Cases.Case
+@using DisciplinarySystem.Application.Complaints.ViewModels.Create
+@using DisciplinarySystem.Presentation.Controllers.Epistles.ViewModels;
+@using DisciplinarySystem.Presentation.Controllers.Complaints.ViewModels;
+@using DisciplinarySystem.Presentation.Controllers.FinalVotes.ViewModels
+@inject DisciplinarySystem.Application.Complaints.Interfaces.IComplainingService _comService;
+@inject DisciplinarySystem.Application.Users.Interfaces.IUserService _userService;
+
+@section Styles{
+	<link rel="stylesheet" href="~/css/pages/full-information.css" />
+}
+
+	<section id="case-full-info">
+		<div class="d-flex justify-content-between align-items-center">
+			<h2 class="text-info">اطلاعات کامل پرونده</h2>
+			<div class="d-flex justify-content-end mb-3">
+
+				<button type="button" class="btn btn-info ms-2 text-white print-btn" id="download" onclick="PDF('case-full-info')">
+					چاپ
+					<i class="fa fa-download" aria-hidden="true"></i>
+				</button>
+				<button type="button" onclick="history.back()" class="btn back-btn d-flex align-items-center" style="background-color:gray;color:white;">
+					بازگشت
+					<i class="fa fa-angle-left me-2"></i>
+				</button>
+			</div>
+
+		</div>
+		<hr />
+		<div class="p-5">
+			@{
+			var complaintDetails = new ComplaintDetailsVM { Complaint = Model.Complaint, CaseId = 0 };
+		}
+		<h4 class="h2 text-center">شکایت</h4>
+		<br />
+		@Html.Partial("~/Views/Complaint/Details.cshtml", complaintDetails)
+		<hr />
+		@if (Model.Epistles.Count() > 0)
+		{
+			<br />
+			<h4 class="h2 text-center">نامه ها</h4>
+		}
+
+		@for (int i = 0; i < Model.Epistles.Count(); i++)
+		{
+			var epistleDetails = new GetEpistleDetailsVM { Epistle = Model.Epistles.ElementAt(i), WithSteps = false };
+
+			@Html.Partial("~/Views/Epistle/Details.cshtml", epistleDetails);
+			<br />
+		}
+		@if (Model.Violations.Count() > 0)
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">تخلف ها</h4>
+		}
+		@foreach (var vio in Model.Violations)
+		{
+			@Html.Partial("~/Views/Violation/Details.cshtml", vio)
+			;
+		}
+
+		@if (Model.Informants.Count() > 0)
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">اظهارات مطلعین</h4>
+		}
+
+		@foreach (var informed in Model.Informants)
+		{
+			@Html.Partial("~/Views/Informed/Details.cshtml", informed)
+			;
+		}
+
+
+		@if (Model.Invitations.Count() > 0)
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">دعوتنامه ها</h4>
+		}
+
+		@foreach (var invite in Model.Invitations)
+		{
+			@Html.Partial("~/Views/Invitation/Details.cshtml", invite)
+			;
+		}
+
+
+		@if (Model.Defences.Count() > 0)
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">دفاعیات</h4>
+		}
+
+		@foreach (var def in Model.Defences)
+		{
+			@Html.Partial("~/Views/Defence/Details.cshtml", def)
+			;
+			<br />
+		}
+
+
+
+		@if (Model.Violations.Any(u => u.PrimaryVote != null))
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">رای اولیه</h4>
+			var primaryVote = Model.Violations.Where(u => u.PrimaryVote != null).Select(u => u.PrimaryVote).First();
+			@Html.Partial("~/Views/PrimaryVote/Details.cshtml", primaryVote)
+			;
+
+		}
+
+		@if (Model.Objections.Count() > 0)
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">اعتراض</h4>
+		}
+		@foreach (var obj in Model.Objections)
+		{
+			@Html.Partial("~/Views/Objection/Details.cshtml", obj)
+			;
+			<br />
+		}
+
+
+		@if (Model.Violations.Any(u => u.FinalVote != null))
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">حکم نهایی</h4>
+			var finalVote = Model.Violations.Where(u => u.FinalVote != null).Select(u => u.FinalVote).First();
+
+			var finalVoteDetails = FinalVoteDetails.Create(finalVote);
+			finalVoteDetails.Users = await _userService.GetUsersNameAsync();
+			finalVoteDetails.Complaining = CreateComplaining.Create(await _comService.GetByCaseIdAsync(finalVote.Violation.CaseId));
+
+
+
+			@Html.Partial("~/Views/FinalVote/Details.cshtml", finalVoteDetails)
+			;
+		}
+
+		@if (Model.Violations.Any(u => u.CentralCommitteeVote != null))
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">حکم کمیته مرکزی</h4>
+			var centralCommitteeVote = Model.Violations.Where(u => u.CentralCommitteeVote != null).Select(u => u.CentralCommitteeVote).First();
+			@Html.Partial("~/Views/CentralCommitteeVote/Details.cshtml", centralCommitteeVote)
+			;
+		}
+
+		@if (Model.RelatedInfos.Count() > 0)
+		{
+			<hr />
+			<br />
+			<h4 class="h2 text-center">اطلاعات مرتبط</h4>
+			foreach (var info in Model.RelatedInfos)
+			{
+				@Html.Partial("~/Views/RelatedInfo/Details.cshtml", info)
+				;
+				<br />
+			}
+		}
+	</div>
+
+</section>
+
+@section Scripts{
+	<script src="~/lib/print-pdf/print.min.js"></script>
+	<script src="~/js/case/full-information.js"></script>
+}

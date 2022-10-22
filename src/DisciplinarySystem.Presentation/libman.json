@@ -1,0 +1,26 @@
+{
+  "version": "1.0",
+  "defaultProvider": "cdnjs",
+  "libraries": [
+    {
+      "library": "bootstrap-sweetalert@1.0.1",
+      "destination": "wwwroot/lib/bootstrap-sweetalert/"
+    },
+    {
+      "library": "html2pdf.js@0.10.1",
+      "destination": "wwwroot/lib/html2pdf.js/"
+    },
+    {
+      "library": "html2canvas@1.4.1",
+      "destination": "wwwroot/lib/html2canvas/"
+    },
+    {
+      "library": "jspdf@2.5.1",
+      "destination": "wwwroot/lib/jspdf/"
+    },
+    {
+      "library": "Chart.js@3.9.1",
+      "destination": "wwwroot/lib/Chart.js/"
+    }
+  ]
+}

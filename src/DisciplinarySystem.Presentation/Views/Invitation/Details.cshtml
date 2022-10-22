@@ -1,0 +1,184 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@using DisciplinarySystem.Presentation.Models
+@model DisciplinarySystem.Domain.Invitations.Invitation
+
+
+@section Styles{
+	<link rel="stylesheet" href="~/lib/persian-web-toolkit/persian-datepicker/dist/css/persian-datepicker.css" />
+	<style>
+		.guest {
+			font-size: 16px;
+			margin: 4px;
+			padding: 12px;
+		}
+
+		.show-calender {
+			border-radius: 0 5px 5px 0;
+		}
+
+		.hide {
+			display: none;
+			visibility:hidden;
+		}
+	</style>
+}
+
+	@{
+	var step = new CaseSteps { CaseId = Model.CaseId, ActiveStep = "Invitation" };
+	<partial name="_CaseStepsPartial" model="@step" />
+}
+
+
+<div class="d-flex justify-content-end mb-3">
+
+	<button type="button" class="btn btn-info ms-2 text-white inv-print-btn" id="download" onclick="PDF('inv-container')">
+		چاپ
+		<i class="fa fa-download" aria-hidden="true"></i>
+	</button>
+	<button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+		بازگشت
+		<i class="fa fa-angle-left me-2"></i>
+	</button>
+</div>
+
+
+<div id="inv-container">
+	<div class="d-flex flex-column flex-sm-row align-items-sm-center  justify-content-between mb-2">
+		<h3 class="mb-sm-0 mb-4">مشاهده دعوتنامه</h3>
+		<div class="d-flex flex-column flex-sm-row gap-2">
+			<div class="mb-3">
+				<label class="form-label">شماره پرونده:</label>
+				<input type="text" asp-for="@Model.CaseId" class="form-control"
+					   readonly>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">تاریخ ثبت:</label>
+				<input type="text" value="@Model.CreateDate.ToShamsi()" class="form-control" readonly>
+			</div>
+		</div>
+	</div>
+
+	<div class="card shadow-sm">
+		<section>
+			<h4 class="text">مدعوین:</h4>
+			<div>
+				<div class="row">
+					<div class="guests m-3">
+						@if (Model.InvitationUsers != null)
+						{
+							@foreach (var item in Model.InvitationUsers)
+							{
+								<span class="badge bg-primary guest">
+									<span>@item.User.FullName</span>
+								</span>
+							}
+						}
+						@if (Model.ComplainingId.HasValue)
+						{
+							<span class="badge bg-primary guest">
+								<span>@Model.Complaining.FullName</span>
+							</span>
+						}
+						@if (Model.PlaintiffId.HasValue)
+						{
+							<span class="badge bg-primary guest">
+								<span>@Model.Plaintiff.FullName</span>
+							</span>
+						}
+					</div>
+				</div>
+			</div>
+		</section>
+		<hr>
+		<section>
+			<div class="row">
+				<div class="mb-3 col-md-6">
+					<label class="form-label">موضوع:</label>
+					<input type="text" asp-for="Subject" class="form-control" readonly>
+				</div>
+				<div class="mb-3 col-md-6">
+					<label class="form-label">تاریخ دعوت:</label>
+					<div class="d-flex">
+						<input id="inlineExampleAlt" name="InviteDate" class="form-control" readonly/>
+					</div>
+					<div class="inline-example hide" data-date="@Model.InviteDate.GetWebToolKitString()"></div>
+					<span class="text-danger" asp-validation-for='InviteDate'></span>
+				</div>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">شرح:</label>
+				<textarea class="form-control" asp-for="Description" rows="8" readonly></textarea>
+			</div>
+		</section>
+	</div>
+	@if (Model.Documents != null && Model.Documents.Count() > 0)
+	{
+		<div>
+			<h4 class="mt-4">مدارک:</h4>
+			<div class="table-overflow">
+				<div class="table ">
+					<table class="table text-center" width="100%">
+						<thead>
+							<tr>
+								<th>عنوان مدرک</th>
+								<th>تاریخ ارسال</th>
+								<th>عملیات</th>
+							</tr>
+						</thead>
+						<tbody>
+							@foreach (var item in Model.Documents)
+							{
+								<tr>
+									<td>@item.Name</td>
+									<td>@item.SendTime.ToShamsi()</td>
+									<td>
+										<div class="table__action">
+											<a class="btn btn--show mx-2" asp-action="Download" asp-route-fileName="@item.Name" asp-route-file="@item.File.Name">
+												<i class="fa fa-download"></i>
+											</a>
+										</div>
+									</td>
+								</tr>
+							}
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	}
+
+</div>
+
+@section Scripts{
+	<script src="~/lib/print-pdf/print.min.js"></script>
+	<script src="~/js/utility/pdf.js"></script>
+	<script src="~/lib/persian-web-toolkit/persian-date/dist/persian-date.min.js"></script>
+	<script src="~/lib/persian-web-toolkit/persian-datepicker/dist/js/persian-datepicker.min.js"></script>
+
+	<script>
+		$('.inline-example').persianDatepicker({
+			inline: false,
+			altField: '#inlineExampleAlt',
+			altFormat: 'LLLL',
+			toolbox: {
+				calendarSwitch: {
+					enabled: true
+				}
+			},
+			navigator: {
+				scroll: {
+					enabled: false
+				}
+			},
+			maxDate: new persianDate().add('month', 3).valueOf(),
+			minDate: new persianDate().subtract('month', 3).valueOf(),
+			timePicker: {
+				enabled: true,
+				meridiem: {
+					enabled: true
+				}
+			}
+		});
+	</script>
+}

@@ -1,0 +1,35 @@
+﻿@model DisciplinarySystem.Presentation.Controllers.Cases.ViewModels.CaseInquiry
+
+<div class="d-flex flex-column flex-sm-row align-items-sm-center  justify-content-between mb-2">
+	<h3 class="mb-sm-0 mb-4">استعلام دانشجو</h3>
+</div>
+
+<form method="post">
+	<div class="d-flex justify-content-center">
+		<div class="card shadow-sm mt-3 mb-1  col-md-10 p-5">
+			<div class="row text-center">
+				<div class="mb-3 d-flex align-items-end justify-content-center">
+					<div class="col-4">
+						<label class="form-label">کد ملی:</label>
+					</div>
+					<div class="col-8">
+						<input type="number" class="form-control" asp-for="NationalCode">
+						<span class="text-danger" asp-validation-for="NationalCode"></span>
+					</div>
+				</div>
+
+			</div>
+
+			<div class="mt-3 text-center d-flex align-items-center justify-content-center">
+				<button class="btn btn--submit">
+					استعلام
+				</button>
+			</div>
+		</div>
+	</div>
+</form>
+
+
+@section Scripts{
+	<partial name="_ValidationScriptsPartial" />
+}

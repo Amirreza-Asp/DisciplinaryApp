@@ -1,0 +1,166 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@using DisciplinarySystem.Presentation.Models
+@model DisciplinarySystem.Application.Informants.ViewModels.UpdateInformed
+
+@{
+	var step = new CaseSteps { CaseId = Model.CaseId, ActiveStep = "Informed" };
+	<partial name="_CaseStepsPartial" model="@step" />
+}
+
+
+<div class="d-flex justify-content-end mb-3">
+	<button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+		بازگشت
+		<i class="fa fa-angle-left me-2"></i>
+	</button>
+</div>
+
+
+<div class="d-flex flex-column flex-sm-row align-items-sm-center  justify-content-between mb-2">
+	<h3 class="mb-sm-0 mb-4">ویرایش اظهارات</h3>
+	<div class="d-flex flex-column flex-sm-row gap-2">
+		<div class="mb-3">
+			<label class="form-label">شماره پرونده:</label>
+			<input type="text" value="@Model.CaseId" class="form-control"
+				   readonly>
+		</div>
+		<div class="mb-3">
+			<label class="form-label">تاریخ ثبت:</label>
+			<input type="text" value="@Model.CreateDate.ToShamsi()" class="form-control" readonly>
+		</div>
+	</div>
+</div>
+
+<form method="post" enctype="multipart/form-data">
+	<input asp-for="Id" hidden />
+	<input asp-for="CreateDate" hidden />
+	<input asp-for="CaseId" hidden />
+
+	<section class="card">
+		<div class="mb-3">
+			<h4 class="mt-4">اظهار کننده:</h4>
+
+
+			<div class="row">
+				<div class="col-md-6">
+					<label class="form-label">نام و نام خانوادگی:</label>
+					<input type="text" asp-for="FullName" class="form-control" id="full">
+					<span class="text-danger" asp-validation-for="FullName"></span>
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">کد ملی:</label>
+					<input type="number" asp-for="NationalCode" id="national" class="form-control">
+					<span class="text-danger" asp-validation-for="NationalCode"></span>
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">شماره تماس:</label>
+					<input type="number" asp-for="PhoneNumber" id="phone" class="form-control">
+					<span class="text-danger" asp-validation-for="PhoneNumber"></span>
+				</div>
+				<div class="col-md-6">
+					<label class="form-label">نام پدر:</label>
+					<input asp-for="Father" id="father" class="form-control">
+					<span class="text-danger" asp-validation-for="Father"></span>
+				</div>
+			</div>
+
+
+		</div>
+		<div>
+			<div class="mb-3 col-md-4">
+				<label class="form-label">موضوع:</label>
+				<input type="text" asp-for="Subject" class="form-control">
+				<span class="text-danger" asp-validation-for="Subject"></span>
+			</div>
+			<div class="mb-3">
+				<label class="form-label">شرح:</label>
+				<textarea class="form-control" asp-for="Statements" rows="5"></textarea>
+				<span class="text-danger" asp-validation-for="Statements"></span>
+			</div>
+
+			<div class="mt-3">
+				<label for="file">
+					<span role="button" id="file-btn" class="btn btn--upload-file">
+						بارگذاری مستندات
+					</span>
+					<input type="file" asp-for="NewDocuments" id="file" hidden multiple />
+				</label>
+			</div>
+		</div>
+
+
+		<div class="mt-3 text-center">
+			<button class="btn btn--submit">
+				ثبت
+			</button>
+		</div>
+	</section>
+</form>
+
+@if (Model.CurrentDocuments != null && Model.CurrentDocuments.Count() > 0)
+{
+	<div>
+		<h4 class="mt-4">مدارک:</h4>
+		<div class="table-overflow">
+			<div class="table ">
+				<table class="table text-center" width="100%">
+					<thead>
+						<tr>
+							<th>عنوان مدرک</th>
+							<th>تاریخ ارسال</th>
+							<th>عملیات</th>
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model.CurrentDocuments)
+						{
+							<tr>
+								<td>@item.Name</td>
+								<td>@item.CreateDate.ToShamsi()</td>
+								<td>
+									<div class="table__action">
+										<a class="btn btn--show mx-2" asp-action="Download" asp-route-fileName="@item.Name" asp-route-file="@item.File">
+											<i class="fa fa-download"></i>
+										</a>
+										<button type="button" class="btn btn--delete" onclick="Delete('/Informed/RemoveFile/@item.Id' , 'فایل')"><i class="fa fa-trash"></i></button>
+
+									</div>
+								</td>
+							</tr>
+						}
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+}
+
+@section Scripts{
+	<partial name="_ValidationScriptsPartial" />
+	<script src="~/js/utility/showFiles.js"></script>
+	<script src="~/js/utility/removeAlert.js"></script>
+	<script>
+		const fullInput = document.getElementById("full");
+		const nationalInput = document.getElementById("national");
+		const phoneInput = document.getElementById("phone");
+		const fatherInput = document.getElementById("father");
+
+		nationalInput.addEventListener("keyup", () => {
+			if (nationalInput.value.length === 10) {
+
+				$.ajax({
+					url: `/Informed/GetInformedInfo/${nationalInput.value}`,
+					type: "GET",
+					success: function (info) {
+						if (info.exists) {
+							fullInput.value = info.data.fullName;
+							phoneInput.value = info.data.phoneNumber;
+							fatherInput.value = info.data.father;
+						}
+					}
+				})
+			}
+		})
+	</script>
+}
