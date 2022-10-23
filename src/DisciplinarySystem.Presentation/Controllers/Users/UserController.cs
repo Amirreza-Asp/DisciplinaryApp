@@ -21,15 +21,19 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
         private readonly IUserApi _userApi;
         private readonly IPositionAPI _positionApi;
         private readonly IRepository<AuthRole> _authRoleRepo;
+        private readonly IRepository<AuthUser> _authUserRepo;
+        private readonly IRepository<User> _userRepo;
 
         private static UserFilter _filters = new UserFilter();
 
-        public UserController ( IUserService userService , IUserApi userApi , IRepository<AuthRole> authRoleRepo , IPositionAPI positionApi )
+        public UserController ( IUserService userService , IUserApi userApi , IRepository<AuthRole> authRoleRepo , IPositionAPI positionApi , IRepository<AuthUser> authUserRepo , IRepository<User> userRepo )
         {
             _userService = userService;
             _userApi = userApi;
             _authRoleRepo = authRoleRepo;
             _positionApi = positionApi;
+            _authUserRepo = authUserRepo;
+            _userRepo = userRepo;
         }
 
         public async Task<IActionResult> Index ( UserFilter filters )
@@ -103,7 +107,6 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
         public async Task<IActionResult> Update ( Guid id )
         {
             var user = await _userService.GetById(id);
-            var authRole = await _authRoleRepo.FirstOrDefaultAsync(u => u.Users.Any(u => u.User.NationalCode.Value == user.NationalCode.Value));
             if ( user == null )
             {
                 TempData[SD.Error] = "کاربر مورد نظر وجود ندارد";
@@ -112,7 +115,7 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
 
 
             var command = UpdateUser.Create(user);
-            command.Access = authRole.Id;
+            command.Access = await _authUserRepo.FirstOrDefaultSelectAsync<long>(filter: u => u.NationalCode.Value == user.NationalCode.Value , select: s => s.RoleId);
             command.Roles = await _userService.GetSelectListRolesAsync();
             command.AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() });
             var positions = await _positionApi.GetPositionsAsync();
@@ -125,10 +128,9 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
             PersianCalendar pc = new PersianCalendar();
             command.StartDate = command.StartDate == default ? default : new DateTime(command.StartDate.Year , command.StartDate.Month , command.StartDate.Day , pc);
             command.EndDate = command.EndDate == default ? default : new DateTime(command.EndDate.Year , command.EndDate.Month , command.EndDate.Day , pc);
-            var authRole = await _authRoleRepo.FirstOrDefaultAsync(u => u.Users.Any(u => u.User.NationalCode.Value == command.NationalCode));
+            var roleId = await _authUserRepo.FirstOrDefaultSelectAsync<long>(filter: u => u.NationalCode.Value == command.NationalCode , select: s => s.RoleId);
+            command.Access = roleId;
 
-            if ( authRole != null )
-                command.Access = authRole.Id;
 
             if ( !ModelState.IsValid )
             {
@@ -153,6 +155,21 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
             await _userService.UpdateAsync(command);
             TempData[SD.Success] = "ویرایش با موفقیت انجام شد";
             return RedirectToAction(nameof(Index) , _filters);
+        }
+
+        public async Task<JsonResult> Remove ( Guid id )
+        {
+            var user = await _userRepo.FindAsync(id);
+            if ( user == null )
+                return Json(new { Success = false });
+
+            var authUser = await _authUserRepo.FirstOrDefaultAsync(u => u.NationalCode.Value == user.NationalCode.Value);
+            if ( authUser != null )
+                _authUserRepo.Remove(authUser);
+
+            _userRepo.Remove(user);
+            await _userRepo.SaveAsync();
+            return Json(new { Success = true });
         }
 
 

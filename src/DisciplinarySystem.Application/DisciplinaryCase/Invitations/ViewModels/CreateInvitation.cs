@@ -9,6 +9,7 @@ namespace DisciplinarySystem.Application.Invitations.ViewModels
         public String Subject { get; set; }
 
         [Required(ErrorMessage = "شرح را وارد کنید")]
+        [MaxLength(50 , ErrorMessage = "شرح دعوت باید کمتر از 50 کاراکتر باشد")]
         public String Description { get; set; }
 
         [Required(ErrorMessage = "تاریخ دعوت را وارد کنید")]

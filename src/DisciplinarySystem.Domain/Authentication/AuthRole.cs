@@ -13,7 +13,7 @@
         public String Title { get; private set; }
         public String? Description { get; private set; }
 
-        public ICollection<UserRole> Users { get; private set; }
+        public ICollection<AuthUser> Users { get; private set; }
 
         public String PersianTitle () => Title switch
         {

@@ -65,28 +65,18 @@ namespace DisciplinarySystem.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<long>("RoleId")
+                        .HasColumnType("bigint");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("RoleId");
+
                     b.ToTable("AuthUser");
-                });
-
-            modelBuilder.Entity("DisciplinarySystem.Domain.Authentication.UserRole", b =>
-                {
-                    b.Property<long>("RoleId")
-                        .HasColumnType("bigint");
-
-                    b.Property<long>("UserId")
-                        .HasColumnType("bigint");
-
-                    b.HasKey("RoleId", "UserId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("UserRoles");
                 });
 
             modelBuilder.Entity("DisciplinarySystem.Domain.Complaints.Complaining", b =>
@@ -971,6 +961,12 @@ namespace DisciplinarySystem.Persistence.Migrations
 
             modelBuilder.Entity("DisciplinarySystem.Domain.Authentication.AuthUser", b =>
                 {
+                    b.HasOne("DisciplinarySystem.Domain.Authentication.AuthRole", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.OwnsOne("DisciplinarySystem.SharedKernel.ValueObjects.NationalCode", "NationalCode", b1 =>
                         {
                             b1.Property<long>("AuthUserId")
@@ -1016,25 +1012,8 @@ namespace DisciplinarySystem.Persistence.Migrations
 
                     b.Navigation("PhoneNumber")
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("DisciplinarySystem.Domain.Authentication.UserRole", b =>
-                {
-                    b.HasOne("DisciplinarySystem.Domain.Authentication.AuthRole", "Role")
-                        .WithMany("Users")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DisciplinarySystem.Domain.Authentication.AuthUser", "User")
-                        .WithMany("Roles")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
 
                     b.Navigation("Role");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DisciplinarySystem.Domain.Complaints.Complaining", b =>
@@ -1862,11 +1841,6 @@ namespace DisciplinarySystem.Persistence.Migrations
             modelBuilder.Entity("DisciplinarySystem.Domain.Authentication.AuthRole", b =>
                 {
                     b.Navigation("Users");
-                });
-
-            modelBuilder.Entity("DisciplinarySystem.Domain.Authentication.AuthUser", b =>
-                {
-                    b.Navigation("Roles");
                 });
 
             modelBuilder.Entity("DisciplinarySystem.Domain.Complaints.Complaining", b =>

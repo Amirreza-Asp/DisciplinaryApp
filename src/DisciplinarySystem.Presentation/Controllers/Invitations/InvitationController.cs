@@ -48,11 +48,7 @@ namespace DisciplinarySystem.Presentation.Controllers.Invitations
             {
                 CaseId = caseId ,
                 Persons = await _invService.GetPersonsAsync(caseId) ,
-                Subject = "دعوت به حراست دانشگاه" ,
-                Description = "جناب آقای / سرکار خانم ....\n\nموضوع : دعوت به جلسه\n\nبا سلام و احترام\n\n" +
-                $"بدین وسیله به استحضار می رساند جلسه ای با موضوعات ذیل فردا مورخه {DateTime.Now.ToShamsi()} راس ساعت .......... در سالن جلسات ساختمان معاونت دانشجویی با حضور مدیریت محترم عامل تشکیل خواهد شد.\n\n" +
-                $"خواهشمند است راس ساعت مقرر حضور به هم رسانید.\n\n" +
-                $"بررسی موضوع و ..........."
+                Subject = "دعوت به حراست دانشگاه"
             };
             return View(dto);
         }

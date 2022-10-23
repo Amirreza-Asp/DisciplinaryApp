@@ -12,6 +12,7 @@ namespace DisciplinarySystem.Application.Invitations.ViewModels
         public String Subject { get; set; }
 
         [Required(ErrorMessage = "شرح را وارد کنید")]
+        [MaxLength(50 , ErrorMessage = "شرح دعوت باید کمتر از 50 کاراکتر باشد")]
         public String Description { get; set; }
 
         public long CaseId { get; set; }
@@ -30,42 +31,42 @@ namespace DisciplinarySystem.Application.Invitations.ViewModels
 
 
 
-        public static UpdateInvitation Create(Invitation entity)
+        public static UpdateInvitation Create ( Invitation entity )
         {
             var obj = new UpdateInvitation
             {
-                Id = entity.Id,
-                CaseId = entity.CaseId,
-                Description = entity.Description,
-                Subject = entity.Subject,
-                CurrentDocuments = entity.Documents.ToList(),
-                CreateTime = entity.CreateDate,
+                Id = entity.Id ,
+                CaseId = entity.CaseId ,
+                Description = entity.Description ,
+                Subject = entity.Subject ,
+                CurrentDocuments = entity.Documents.ToList() ,
+                CreateTime = entity.CreateDate ,
                 // 2025/3/12 12:53
-                InviteDate = entity.InviteDate.Year + "/" + entity.InviteDate.Month + "/" + entity.InviteDate.Day + " " + entity.InviteDate.TimeOfDay.ToString().Substring(0, 5),
+                InviteDate = entity.InviteDate.Year + "/" + entity.InviteDate.Month + "/" + entity.InviteDate.Day + " " + entity.InviteDate.TimeOfDay.ToString().Substring(0 , 5) ,
                 SelectedPersons = entity.InvitationUsers.Select(u => new InvitationsInfo
                 {
-                    Id = u.UserId,
-                    Name = u.User.FullName,
+                    Id = u.UserId ,
+                    Name = u.User.FullName ,
                     Optgroup = "اعضای کمیته"
                 }).ToList()
             };
 
-            if (entity.ComplainingId.HasValue)
+            if ( entity.ComplainingId.HasValue )
             {
-                obj.SelectedPersons.Insert(0, new InvitationsInfo
+                obj.SelectedPersons.Insert(0 , new InvitationsInfo
                 {
-                    Id = entity.ComplainingId.Value,
-                    Name = entity.Complaining.FullName,
+                    Id = entity.ComplainingId.Value ,
+                    Name = entity.Complaining.FullName ,
                     Optgroup = "متشاکی"
                 });
             }
 
-            if (entity.PlaintiffId.HasValue)
+            if ( entity.PlaintiffId.HasValue )
             {
-                obj.SelectedPersons.Insert(0, new InvitationsInfo
+                obj.SelectedPersons.Insert(0 , new InvitationsInfo
                 {
-                    Id = entity.PlaintiffId.Value,
-                    Name = entity.Plaintiff.FullName,
+                    Id = entity.PlaintiffId.Value ,
+                    Name = entity.Plaintiff.FullName ,
                     Optgroup = "شاکی"
                 });
             }

@@ -2,6 +2,7 @@
 using DisciplinarySystem.Application.Authentication.Interfaces;
 using DisciplinarySystem.Domain.Authentication;
 using DisciplinarySystem.Domain.Users;
+using DisciplinarySystem.SharedKernel;
 using DisciplinarySystem.SharedKernel.Common;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
@@ -52,8 +53,7 @@ namespace DisciplinarySystem.Application.Authentication
             var user = await _authUserRepo.FirstOrDefaultAsync(
                 u => u.UserName == command.UserName ,
                 include: source =>
-                    source.Include(u => u.Roles)
-                               .ThenInclude(u => u.Role));
+                    source.Include(u => u.Role));
 
             if ( user != null )
             {
@@ -86,8 +86,9 @@ namespace DisciplinarySystem.Application.Authentication
                 {
                     var data1 = JsonSerializer.Deserialize<KhedmatResponseStudent>(result);
 
+                    var userRole = await _roleRepo.FirstOrDefaultAsync(u => u.Title == SD.User);
                     AuthUser newUser = new AuthUser(data1.userInfo.phone , data1.userInfo.national_code , data1.userInfo.name
-                        , data1.userInfo.last_name , data1.userInfo.username , _passwordHasher.HashPassword(command.Password));
+                        , data1.userInfo.last_name , data1.userInfo.username , _passwordHasher.HashPassword(command.Password) , userRole.Id);
 
                     _authUserRepo.Add(newUser);
                     await _authUserRepo.SaveAsync();
@@ -111,12 +112,9 @@ namespace DisciplinarySystem.Application.Authentication
             identity.AddClaim(new Claim(ClaimTypes.Name , user.Name + " " + user.Family));
             identity.AddClaim(new Claim(ClaimTypes.NameIdentifier , user.NationalCode.Value));
 
-            if ( user.Roles != null )
+            if ( user.Role != null )
             {
-                foreach ( var item in user.Roles )
-                {
-                    identity.AddClaim(new Claim(ClaimTypes.Role , item.Role.Title));
-                }
+                identity.AddClaim(new Claim(ClaimTypes.Role , user.Role.Title));
             }
             var principal = new ClaimsPrincipal(identity);
             await _contextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme , principal);

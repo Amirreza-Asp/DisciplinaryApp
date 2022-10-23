@@ -86,7 +86,7 @@ namespace DisciplinarySystem.Presentation
             app.UseAuthentication();
             app.UseAuthorization();
 
-            dbInitializer.Execute();
+            dbInitializer.Execute().GetAwaiter().GetResult();
 
             app.UseSession();
 

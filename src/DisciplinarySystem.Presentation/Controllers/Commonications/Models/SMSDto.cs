@@ -9,6 +9,7 @@ namespace DisciplinarySystem.Presentation.Controllers.Commonications.Models
         public String PhoneNumber { get; set; }
 
         [Required(ErrorMessage = "متن پیام را وارد کنید")]
+        [MaxLength(50 , ErrorMessage = "متن پیام کمتر از 50 کاراکتر است")]
         public String Content { get; set; }
     }
 }

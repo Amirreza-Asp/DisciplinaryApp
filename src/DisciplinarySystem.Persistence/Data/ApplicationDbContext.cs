@@ -32,7 +32,6 @@ namespace DisciplinarySystem.Persistence.Data
         // auth
         public DbSet<AuthUser> AuthUser { get; set; }
         public DbSet<AuthRole> AuthRole { get; set; }
-        public DbSet<UserRole> UserRoles { get; set; }
 
 
         // app

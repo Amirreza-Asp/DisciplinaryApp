@@ -2,7 +2,6 @@
 using DisciplinarySystem.Application.Users.Interfaces;
 using DisciplinarySystem.Application.Users.ViewModels.User;
 using DisciplinarySystem.Domain.Authentication;
-using DisciplinarySystem.Domain.Authentication.Interfaces;
 using DisciplinarySystem.Domain.Users;
 using DisciplinarySystem.SharedKernel.Common;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -17,16 +16,14 @@ namespace DisciplinarySystem.Application.Users
         private readonly IRepository<Role> _roleRepo;
         private readonly IUserApi _userApi;
         private readonly IRepository<AuthUser> _authUserRepo;
-        private readonly IUserRoleRepository _userRoleRepo;
         private readonly IPasswordHasher _passwordHasher;
 
-        public UserService ( IRepository<User> userRepo , IRepository<Role> roleRepo , IUserApi userApi , IRepository<AuthUser> authUserRepo , IUserRoleRepository userRoleRepo , IPasswordHasher passwordHasher )
+        public UserService ( IRepository<User> userRepo , IRepository<Role> roleRepo , IUserApi userApi , IRepository<AuthUser> authUserRepo , IPasswordHasher passwordHasher )
         {
             _userRepo = userRepo;
             _roleRepo = roleRepo;
             _userApi = userApi;
             _authUserRepo = authUserRepo;
-            _userRoleRepo = userRoleRepo;
             _passwordHasher = passwordHasher;
         }
 
@@ -38,14 +35,9 @@ namespace DisciplinarySystem.Application.Users
             var userApi = await _userApi.GetUserAsync(user.NationalCode);
 
 
-            _authUserRepo.Add(new AuthUser(userApi.Mobile , userApi.Idmelli , userApi.Name , userApi.Lastname , userApi.Idmelli , _passwordHasher.HashPassword(userApi.Idmelli)));
+            _authUserRepo.Add(new AuthUser(userApi.Mobile , userApi.Idmelli , userApi.Name , userApi.Lastname , userApi.Idmelli , _passwordHasher.HashPassword(userApi.Idmelli) , command.Access));
 
             _userRepo.Add(user);
-            await _userRepo.SaveAsync();
-
-            var authUser = await _authUserRepo.FirstOrDefaultAsync(u => u.UserName == userApi.Idmelli);
-            _userRoleRepo.Add(new UserRole(authUser.Id , command.Access));
-
             await _userRepo.SaveAsync();
         }
 

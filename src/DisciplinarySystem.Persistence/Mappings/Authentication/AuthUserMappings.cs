@@ -24,6 +24,10 @@ namespace DisciplinarySystem.Persistence.Mappings.Authentication
                 b.Property(u => u.Value).HasColumnName("NationalCode").HasMaxLength(10).IsUnicode(false);
             });
 
+            builder.HasOne(b => b.Role)
+                .WithMany(b => b.Users)
+                .HasForeignKey(b => b.RoleId);
+
         }
     }
 }

@@ -2,7 +2,7 @@
 {
     public class AuthUser : BaseEntity<long>
     {
-        public AuthUser ( PhoneNumber phoneNumber , NationalCode nationalCode , string name , string family , string userName , string password )
+        public AuthUser ( PhoneNumber phoneNumber , NationalCode nationalCode , string name , string family , string userName , string password , long roleId )
         {
             PhoneNumber = phoneNumber;
             NationalCode = nationalCode;
@@ -11,6 +11,7 @@
             Name = Guard.Against.NullOrEmpty(name);
             Family = Guard.Against.NullOrEmpty(family);
             IsDeleted = false;
+            RoleId = Guard.Against.NegativeOrZero(roleId);
         }
 
         private AuthUser ()
@@ -24,9 +25,10 @@
         public String UserName { get; private set; }
         public String Password { get; private set; }
         public bool IsDeleted { get; private set; }
+        public long RoleId { get; private set; }
 
 
-        public ICollection<UserRole> Roles { get; private set; }
+        public AuthRole Role { get; private set; }
 
 
         public AuthUser WithPassword ( String password )

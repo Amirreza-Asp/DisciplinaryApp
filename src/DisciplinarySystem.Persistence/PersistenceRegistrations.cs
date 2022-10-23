@@ -1,12 +1,10 @@
-﻿using DisciplinarySystem.Domain.Authentication.Interfaces;
-using DisciplinarySystem.Domain.Complaints.Interfaces;
+﻿using DisciplinarySystem.Domain.Complaints.Interfaces;
 using DisciplinarySystem.Domain.DisciplinaryCase.Cases.Interfaces;
 using DisciplinarySystem.Domain.Epistles.Interfaces;
 using DisciplinarySystem.Persistence.Data;
 using DisciplinarySystem.Persistence.Data.Initializer;
 using DisciplinarySystem.Persistence.Data.Initializer.Interfaces;
 using DisciplinarySystem.Persistence.Repositories;
-using DisciplinarySystem.Persistence.Repositories.Authentication;
 using DisciplinarySystem.Persistence.Repositories.DisciplinaryCase;
 using DisciplinarySystem.SharedKernel.Common;
 using MediatR;
@@ -37,7 +35,6 @@ namespace DisciplinarySystem.Persistence
             services.AddScoped<IComplaintRepository , ComplaintRepository>();
             services.AddScoped<IEpistleRepository , EpistleRepository>();
             services.AddScoped<ICaseReposiotry , CaseRepository>();
-            services.AddScoped<IUserRoleRepository , UserRoleRepository>();
             services.AddScoped<IDbInitializer , DbInitializer>();
             return services;
         }
