@@ -54,6 +54,12 @@ namespace DisciplinarySystem.Persistence.Data.Initializer
             {
                 return;
             }
+
+            if ( _roleRepo.GetCount(u => u.Title == "مدیریت") == 0 )
+            {
+                _roleRepo.Add(new Role("مدیریت" , "دسترسی کامل"));
+            }
+
             await _roleManager.SaveAsync();
             var adminRole = await _roleManager.FirstOrDefaultAsync(u => u.Title == SD.Managment);
 
