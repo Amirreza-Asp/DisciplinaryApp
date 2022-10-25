@@ -4,6 +4,7 @@ using DisciplinarySystem.Application.Complaints.Interfaces;
 using DisciplinarySystem.Application.Complaints.ViewModels;
 using DisciplinarySystem.Application.Complaints.ViewModels.Create;
 using DisciplinarySystem.Application.Complaints.ViewModels.Update;
+using DisciplinarySystem.Application.DisciplinaryCase.Complaints.ViewModels.Update;
 using DisciplinarySystem.Application.Helpers;
 using DisciplinarySystem.Domain.Complaints;
 using DisciplinarySystem.Domain.Complaints.Enums;
@@ -25,8 +26,8 @@ namespace DisciplinarySystem.Application.Complaints
         private readonly IComplaintRepository _complaintRepo;
         private readonly IRepository<Case> _caseRepo;
 
-        public ComplaintService(IUserApi userApi, IRepository<Plaintiff> plaintiffRepo, IRepository<Complaining> complainingRepo,
-            IRepository<ComplaintDocument> documentRepo, IRepository<Case> caseRepo, IComplaintRepository complaintRepo)
+        public ComplaintService ( IUserApi userApi , IRepository<Plaintiff> plaintiffRepo , IRepository<Complaining> complainingRepo ,
+            IRepository<ComplaintDocument> documentRepo , IRepository<Case> caseRepo , IComplaintRepository complaintRepo )
         {
             _userApi = userApi;
             _plaintiffRepo = plaintiffRepo;
@@ -37,89 +38,90 @@ namespace DisciplinarySystem.Application.Complaints
         }
 
 
-        public async Task<Complaint> GetByCaseIdAsync(long caseId)
+        public async Task<Complaint> GetByCaseIdAsync ( long caseId )
         {
             return await _complaintRepo.FirstOrDefaultAsync(
-                filter:u => u.Case.Id == caseId,
-                include:source=>source.Include(u=>u.Plaintiff)
-                            .Include(u=>u.Complaining)
-                            .Include(u=>u.Documents));
+                filter: u => u.Case.Id == caseId ,
+                include: source => source.Include(u => u.Plaintiff)
+                            .Include(u => u.Complaining)
+                            .Include(u => u.Documents));
         }
-        public async Task<List<GetComplaint>> GetAllAsync(Expression<Func<Complaint, bool>> filter = null, int take = 10, int skip = 0)
+        public async Task<List<GetComplaint>> GetAllAsync ( Expression<Func<Complaint , bool>> filter = null , int take = 10 , int skip = 0 )
         {
             var objects = await
                 _complaintRepo.GetAllAsync<GetComplaint>(
-                    filter: filter,
+                    filter: filter ,
                     include: source => source
                         .Include(u => u.Complaining)
                         .Include(u => u.Plaintiff)
-                        .Include(u => u.Case),
-                    orderBy: entity => entity.OrderByDescending(u => u.CreateDate),
+                        .Include(u => u.Case) ,
+                    orderBy: entity => entity.OrderByDescending(u => u.Title)
+                                    .OrderByDescending(u => u.CreateDate) ,
                     select: entity => new GetComplaint
                     {
-                        Id = entity.Id,
-                        ComplainingName = entity.Complaining.FullName,
-                        PlaintiffName = entity.Plaintiff.FullName,
-                        CreateTime = entity.CreateDate,
-                        Status = entity.Case == null ? "_" : entity.Case.Status.ToPersian(),
-                        Subject = entity.Title,
+                        Id = entity.Id ,
+                        ComplainingName = entity.Complaining.FullName ,
+                        PlaintiffName = entity.Plaintiff.FullName ,
+                        CreateTime = entity.CreateDate ,
+                        Status = entity.Case == null ? "_" : entity.Case.Status.ToPersian() ,
+                        Subject = entity.Title ,
                         Result = entity.Result.ToPersian()
-                    },
-                    take: take,
+                    } ,
+                    take: take ,
                     skip: skip
                 );
 
             return objects.ToList();
         }
 
-        public int GetCount(Expression<Func<Complaint, bool>> filter = null)
+        public int GetCount ( Expression<Func<Complaint , bool>> filter = null )
         {
             return _complaintRepo.GetCount(filter);
         }
 
-        public async Task<Complaint> GetByIdAsync(long id)
+        public async Task<Complaint> GetByIdAsync ( long id )
         {
             return await _complaintRepo.FirstOrDefaultAsync(
-                                filter: entity => entity.Id == id,
+                                filter: entity => entity.Id == id ,
                                 include: source => source
                                     .Include(u => u.Complaining)
                                     .Include(u => u.Plaintiff)
                                     .Include(u => u.Documents));
         }
 
-        public async Task<UserInfo> GetUserAsync(string nationalCode)
+        public async Task<UserInfo> GetUserAsync ( string nationalCode )
         {
             return await _userApi.GetUserAsync(nationalCode);
         }
 
-        public async Task<ComplaintDocument> GetDocumentByIdAsync(Guid id)
+        public async Task<ComplaintDocument> GetDocumentByIdAsync ( Guid id )
         {
             return await _documentRepo.FindAsync(id);
         }
 
 
-        public async Task CreateAsync(CreateComplaint createComplaint, IFormFileCollection files)
+        public async Task CreateAsync ( CreateComplaint createComplaint , IFormFileCollection files )
         {
             var plaintiffId = AddPlaintiff(createComplaint.Plaintiff);
             var complainingId = AddComplainingAsync(createComplaint.Complaining);
 
-            var complaint = new Complaint(createComplaint.Subject, plaintiffId, complainingId, createComplaint.Description);
+            var complaint = new Complaint(createComplaint.Subject , plaintiffId , complainingId , createComplaint.Description);
 
             var complaintId = await _complaintRepo.CreateAsync(complaint);
-            AddDocuments(files, complaintId);
+            AddDocuments(files , complaintId);
             await _documentRepo.SaveAsync();
         }
 
-        public async Task<bool> RemoveAsync(long id)
+        public async Task<bool> RemoveAsync ( long id )
         {
             var complaint = await _complaintRepo.FirstOrDefaultAsync(
-                filter: u => u.Id == id,
+                filter: u => u.Id == id ,
                 include: source => source
                     .Include(u => u.Plaintiff)
                     .Include(u => u.Complaining)
                     .Include(u => u.Documents));
 
-            if (complaint == null)
+            if ( complaint == null )
                 return false;
 
             _complainingRepo.Remove(complaint.Complaining);
@@ -134,29 +136,44 @@ namespace DisciplinarySystem.Application.Complaints
             return true;
         }
 
-        public async Task UpdateAsync(UpdateComplaint updateComplaint, IFormFileCollection files)
+        public async Task<UpdateResult> UpdateAsync ( UpdateComplaint updateComplaint , IFormFileCollection files )
         {
             var complaint = await GetByIdAsync(updateComplaint.Id);
-            if (complaint == null)
-                return;
+            var upRes = new UpdateResult();
+
+            if ( complaint == null )
+                return upRes;
+
+            if ( complaint.Result != ComplaintResult.Filing && ( ComplaintResult ) updateComplaint.Result == ComplaintResult.Filing )
+            {
+                var caseEntity = new Case(complaint.Id);
+                _caseRepo.Add(caseEntity);
+                complaint.WithResult(ComplaintResult.SeeCase);
+                upRes.CaseList();
+            }
+            else
+                complaint.WithResult(( ComplaintResult ) updateComplaint.Result);
 
             complaint
                 .WithTitle(updateComplaint.Subject)
-                .WithDescription(updateComplaint.Description)
-                .WithResult((ComplaintResult)updateComplaint.Result);
+                .WithDescription(updateComplaint.Description);
 
-            UpdateComplaining(updateComplaint.Complaining, complaint.Complaining);
-            UpdatePlaintiff(updateComplaint.Plaintiff, complaint.Plaintiff);
-            AddDocuments(files, updateComplaint.Id);
+            UpdateComplaining(updateComplaint.Complaining , complaint.Complaining);
+            UpdatePlaintiff(updateComplaint.Plaintiff , complaint.Plaintiff);
+            AddDocuments(files , updateComplaint.Id);
+
+
 
             _complaintRepo.Update(complaint);
             await _complaintRepo.SaveAsync();
+
+            return upRes;
         }
 
-        public async Task<bool> RemoveFileAsync(Guid id)
+        public async Task<bool> RemoveFileAsync ( Guid id )
         {
             var doc = await _documentRepo.FindAsync(id);
-            if (doc == null)
+            if ( doc == null )
                 return false;
 
             doc.RemoveFile();
@@ -165,10 +182,10 @@ namespace DisciplinarySystem.Application.Complaints
             return true;
         }
 
-        public async Task CreateCaseAsync(long id)
+        public async Task CreateCaseAsync ( long id )
         {
             Complaint complaint = await _complaintRepo.FirstOrDefaultAsync(u => u.Id == id);
-            if (complaint == null)
+            if ( complaint == null )
                 return;
 
             var caseEntity = new Case(id);
@@ -181,47 +198,47 @@ namespace DisciplinarySystem.Application.Complaints
         }
 
         #region Utilities
-        private Guid AddPlaintiff(CreatePlaintiff createPlaintiff)
+        private Guid AddPlaintiff ( CreatePlaintiff createPlaintiff )
         {
-            var plaintiff = new Plaintiff(Guid.NewGuid(), createPlaintiff.FullName, createPlaintiff.PhoneNumber,
-                createPlaintiff.Address, createPlaintiff.NationalCode);
+            var plaintiff = new Plaintiff(Guid.NewGuid() , createPlaintiff.FullName , createPlaintiff.PhoneNumber ,
+                createPlaintiff.Address , createPlaintiff.NationalCode);
 
             _plaintiffRepo.Add(plaintiff);
             return plaintiff.Id;
         }
 
-        private Guid AddComplainingAsync(CreateComplaining complaining)
+        private Guid AddComplainingAsync ( CreateComplaining complaining )
         {
-            var entity = new Complaining(Guid.NewGuid(), complaining.FullName, complaining.StudentNumber, complaining.NationalCode,
-                complaining.Grade, complaining.EducationGroup, complaining.College, complaining.Father);
+            var entity = new Complaining(Guid.NewGuid() , complaining.FullName , complaining.StudentNumber , complaining.NationalCode ,
+                complaining.Grade , complaining.EducationGroup , complaining.College , complaining.Father);
 
             _complainingRepo.Add(entity);
             return entity.Id;
         }
 
-        private void AddDocuments(IFormFileCollection files, long complaintId)
+        private void AddDocuments ( IFormFileCollection files , long complaintId )
         {
-            if (files == null)
+            if ( files == null )
                 return;
 
-            foreach (var file in files)
+            foreach ( var file in files )
             {
-                var doc = new ComplaintDocument(Guid.NewGuid(), complaintId, file.FileName,
-                    new Document(file.FileName, file.ReadBytes()));
+                var doc = new ComplaintDocument(Guid.NewGuid() , complaintId , file.FileName ,
+                    new Document(file.FileName , file.ReadBytes()));
 
                 _documentRepo.Add(doc);
                 doc.CreateFile();
             }
         }
 
-        private void UpdatePlaintiff(UpdatePlaintiff updatePlaintiff, Plaintiff entity)
+        private void UpdatePlaintiff ( UpdatePlaintiff updatePlaintiff , Plaintiff entity )
         {
             entity.WithFullName(updatePlaintiff.FullName).WithPhoneNumber(updatePlaintiff.PhoneNumber)
                 .WithAddress(updatePlaintiff.Address).WithNationalCode(updatePlaintiff.NationalCode);
             _plaintiffRepo.Update(entity);
         }
 
-        private void UpdateComplaining(UpdateComplaining updateComplaining, Complaining entity)
+        private void UpdateComplaining ( UpdateComplaining updateComplaining , Complaining entity )
         {
             entity.WithFullName(updateComplaining.FullName)
                 .WithNationalCode(updateComplaining.NationalCode)

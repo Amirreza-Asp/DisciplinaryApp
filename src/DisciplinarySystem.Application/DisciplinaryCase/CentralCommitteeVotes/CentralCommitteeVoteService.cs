@@ -49,7 +49,8 @@ namespace DisciplinarySystem.Application.DisciplinaryCase.CentralCommitteeVotes
             return await _ccvRepo.GetAllAsync(
                 filter: filter ,
                 include: source => source.Include(u => u.Verdict).Include(u => u.Violation) ,
-                orderBy: source => source.OrderByDescending(b => b.CreateTime) ,
+                orderBy: source => source.OrderByDescending(u => u.Violation.Title)
+                .OrderByDescending(b => b.CreateTime) ,
                 take: take ,
                 skip: skip);
         }

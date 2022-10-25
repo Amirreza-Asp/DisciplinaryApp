@@ -49,7 +49,7 @@ namespace DisciplinarySystem.Application.Epistles
         {
             var entities = await _epistleRepo.GetAllAsync(
                 filter ,
-                orderBy: source => source.OrderByDescending(u => u.CreateDate) ,
+                orderBy: source => source.OrderByDescending(u => u.Id).OrderByDescending(u => u.CreateDate) ,
                 skip: skip ,
                 take: take);
 

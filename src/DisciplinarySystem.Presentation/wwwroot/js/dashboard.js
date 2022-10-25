@@ -349,7 +349,7 @@ async function fetchCaseVotesPart() {
     const info = {
         labels: xValues,
         datasets: [{
-            label: 'وضعیت شکایات',
+            label: 'وضعیت پرونده ها',
             data: yValues,
             backgroundColor: backgroundColors
             , borderColor: borderColors,

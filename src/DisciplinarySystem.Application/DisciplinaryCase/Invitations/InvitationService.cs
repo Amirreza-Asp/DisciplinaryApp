@@ -172,7 +172,7 @@ namespace DisciplinarySystem.Application.Invitations
         {
             return await _invRepo.GetAllAsync<InvitationDetails>(
                     filter: filters ,
-                    orderBy: source => source.OrderByDescending(u => u.CreateDate) ,
+                    orderBy: source => source.OrderByDescending(b => b.Subject).OrderByDescending(u => u.CreateDate) ,
                     select: entity => new InvitationDetails
                     {
                         Id = entity.Id ,

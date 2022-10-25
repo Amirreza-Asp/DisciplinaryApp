@@ -4,7 +4,9 @@ using DisciplinarySystem.Application.Complaints.Interfaces;
 using DisciplinarySystem.Application.Complaints.ViewModels;
 using DisciplinarySystem.Application.Complaints.ViewModels.Create;
 using DisciplinarySystem.Application.Complaints.ViewModels.Update;
+using DisciplinarySystem.Application.DisciplinaryCase.Complaints.ViewModels.Update;
 using DisciplinarySystem.Domain.Complaints.Enums;
+using DisciplinarySystem.Presentation.Controllers.Cases;
 using DisciplinarySystem.Presentation.Controllers.Complaints.ViewModels;
 using DisciplinarySystem.SharedKernel;
 using DisciplinarySystem.SharedKernel.Common;
@@ -113,8 +115,11 @@ namespace DisciplinarySystem.Presentation.Controllers.Complaints
 
 
             var files = HttpContext.Request.Form.Files;
-            await _complaintService.UpdateAsync(updateComplaint , files);
+            var res = await _complaintService.UpdateAsync(updateComplaint , files);
             TempData[SD.Info] = "ویرایش شکایت با موفقیت انجام شد";
+
+            if ( res.ShowResult() == UpdateComplaintResult.CaseList )
+                return RedirectToAction(nameof(CaseController.Index) , "Case");
             return RedirectToAction(nameof(Index) , _filterVM);
 
         }

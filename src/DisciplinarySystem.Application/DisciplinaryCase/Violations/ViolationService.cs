@@ -59,6 +59,7 @@ namespace DisciplinarySystem.Application.Violations
                     filter ,
                     include: source => source
                         .Include(u => u.Category) ,
+                    orderBy: source => source.OrderByDescending(u => u.Title).OrderByDescending(u => u.CreateDate) ,
                     select: violation => new GetViolatonDetails
                     {
                         Id = violation.Id ,
