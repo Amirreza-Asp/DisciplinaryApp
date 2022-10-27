@@ -9,6 +9,7 @@ using DisciplinarySystem.Application.Helpers;
 using DisciplinarySystem.Domain.Complaints;
 using DisciplinarySystem.Domain.Complaints.Enums;
 using DisciplinarySystem.Domain.Complaints.Interfaces;
+using DisciplinarySystem.Domain.Epistles;
 using DisciplinarySystem.SharedKernel.Common;
 using DisciplinarySystem.SharedKernel.ValueObjects;
 using Microsoft.AspNetCore.Http;
@@ -25,9 +26,10 @@ namespace DisciplinarySystem.Application.Complaints
         private readonly IRepository<ComplaintDocument> _documentRepo;
         private readonly IComplaintRepository _complaintRepo;
         private readonly IRepository<Case> _caseRepo;
+        private readonly IRepository<Epistle> _epistleRepo;
 
         public ComplaintService ( IUserApi userApi , IRepository<Plaintiff> plaintiffRepo , IRepository<Complaining> complainingRepo ,
-            IRepository<ComplaintDocument> documentRepo , IRepository<Case> caseRepo , IComplaintRepository complaintRepo )
+            IRepository<ComplaintDocument> documentRepo , IRepository<Case> caseRepo , IComplaintRepository complaintRepo , IRepository<Epistle> epistleRepo )
         {
             _userApi = userApi;
             _plaintiffRepo = plaintiffRepo;
@@ -35,6 +37,7 @@ namespace DisciplinarySystem.Application.Complaints
             _documentRepo = documentRepo;
             _complaintRepo = complaintRepo;
             _caseRepo = caseRepo;
+            _epistleRepo = epistleRepo;
         }
 
 
@@ -119,10 +122,19 @@ namespace DisciplinarySystem.Application.Complaints
                 include: source => source
                     .Include(u => u.Plaintiff)
                     .Include(u => u.Complaining)
-                    .Include(u => u.Documents));
+                    .Include(u => u.Documents)
+                    .Include(u => u.Case)
+                        .ThenInclude(u => u.Epistles)
+                            .ThenInclude(u => u.Documents));
 
             if ( complaint == null )
                 return false;
+
+            complaint.Case.Epistles.ToList().ForEach(item =>
+            {
+                item.Documents.ToList().ForEach(doc => doc.RemoveFile());
+                _epistleRepo.Remove(item);
+            });
 
             _complainingRepo.Remove(complaint.Complaining);
             _plaintiffRepo.Remove(complaint.Plaintiff);

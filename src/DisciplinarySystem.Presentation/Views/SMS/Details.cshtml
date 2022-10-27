@@ -1,0 +1,40 @@
+﻿@using DisciplinarySystem.Application.Helpers
+@model DisciplinarySystem.Domain.Commonications.SMS
+
+<div class="d-flex flex-column flex-sm-row align-items-sm-center  justify-content-between mb-2">
+    <h3 class="mb-sm-0 mb-4">مشاهده پیامک</h3>
+    
+</div>
+
+<div class="d-flex justify-content-center">
+    <div class="card shadow-sm mt-3 mb-1  col-md-10 p-5">
+        <div class="row text-center">
+            <div class="mb-3 d-flex align-items-end justify-content-center">
+                <div class="col-4">
+                    <label class="form-label">تاریخ ارسال:</label>
+                </div>
+                <div class="col-8">
+                    <input type="text" value="@Model.SendDate.ToShamsi()" class="form-control" readonly>
+                </div>
+            </div>
+            <div class="mb-3 d-flex align-items-end justify-content-center">
+                <div class="col-4">
+                    <label class="form-label">شماره :</label>
+                </div>
+                <div class="col-8">
+                    <input class="form-control" value="@Model.PhoneNumber.Value" readonly>
+                </div>
+            </div>
+            <div class="mb-3 d-flex align-items-center justify-content-center">
+                <div class="col-4">
+                    <label class="form-label">متن:</label>
+                </div>
+                <div class="col-8">
+                    <textarea class="form-control" asp-for="Text" rows="5" readonly></textarea>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+</div>

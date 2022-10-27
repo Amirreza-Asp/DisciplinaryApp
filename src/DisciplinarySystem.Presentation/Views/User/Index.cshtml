@@ -33,6 +33,7 @@
 							<th class="table__row">ردیف</th>
 							<th>نام و نام خانوادگی</th>
 							<th>نقش</th>
+							<th>نوع فعالیت</th>
 							<th>تاریخ حضور</th>
 							<th>تاریخ پایان</th>
 							<th>تاریخ ایجاد</th>
@@ -46,6 +47,7 @@
 							<td>@(i + 1 + Model.Filters.Skip)</td>
 							<td>@Model.Users.ElementAt(i).FullName</td>
 							<td>@Model.Users.ElementAt(i).Role.Title</td>
+							<td>@Model.Users.ElementAt(i).Type</td>
 							<td>@Model.Users.ElementAt(i).AttendenceTime.From.ToShamsi()</td>
 							<td>@Model.Users.ElementAt(i).AttendenceTime.To.ToShamsi()</td>
 							<td>@Model.Users.ElementAt(i).CreateDate.ToShamsi()</td>

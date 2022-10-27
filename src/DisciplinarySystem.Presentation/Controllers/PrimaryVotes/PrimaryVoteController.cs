@@ -1,6 +1,9 @@
-﻿using DisciplinarySystem.Application.Helpers;
+﻿using DisciplinarySystem.Application.Complaints.Interfaces;
+using DisciplinarySystem.Application.Complaints.ViewModels.Create;
+using DisciplinarySystem.Application.Helpers;
 using DisciplinarySystem.Application.PrimaryVotes.Interfaces;
 using DisciplinarySystem.Application.PrimaryVotes.ViewModels;
+using DisciplinarySystem.Application.Users.Interfaces;
 using DisciplinarySystem.Application.Violations.Intefaces;
 using DisciplinarySystem.Domain.PrimaryVotes;
 using DisciplinarySystem.Presentation.Controllers.PrimaryVotes.ViewModels;
@@ -16,14 +19,18 @@ namespace DisciplinarySystem.Presentation.Controllers.PrimaryVotes
         private readonly IPrimaryVoteService _prvService;
         private readonly IWebHostEnvironment _hostEnv;
         private readonly IViolationService _violationService;
+        private readonly IUserService _userService;
+        private readonly IComplainingService _comService;
 
         private static PrimaryVoteFilter _filters = new PrimaryVoteFilter();
 
-        public PrimaryVoteController ( IPrimaryVoteService prvService , IWebHostEnvironment hostEnv , IViolationService violationService )
+        public PrimaryVoteController ( IPrimaryVoteService prvService , IWebHostEnvironment hostEnv , IViolationService violationService , IUserService userService , IComplainingService comService )
         {
             _prvService = prvService;
             _hostEnv = hostEnv;
             _violationService = violationService;
+            _userService = userService;
+            _comService = comService;
         }
 
         public async Task<IActionResult> Index ( PrimaryVoteFilter filters )
@@ -52,26 +59,41 @@ namespace DisciplinarySystem.Presentation.Controllers.PrimaryVotes
                 return RedirectToAction(nameof(Index) , _filters);
             }
 
-            return View(entity);
+            var command = UpdatePrimaryVote.Create(entity);
+
+            var complaining = await _comService.GetByCaseIdAsync(entity.Violation.CaseId);
+            command.Violations = await _violationService.GetSelectedListAsync();
+            command.Verdicts = await _prvService.GetSelectedVotesAsync();
+            command.Users = await _userService.GetUsersNameAsync(SD.Badavi);
+            command.Complaining = CreateComplaining.Create(complaining);
+            return View(command);
         }
 
         public async Task<IActionResult> Create ( long caseId )
         {
+            var complaining = await _comService.GetByCaseIdAsync(caseId);
+
             var command = new CreatePrimaryVote
             {
                 CaseId = caseId ,
                 Verdicts = await _prvService.GetSelectedVotesAsync() ,
-                Violations = await _violationService.GetSelectedListAsync()
+                Violations = await _violationService.GetSelectedListAsync() ,
+                Users = await _userService.GetUsersNameAsync(SD.Badavi) ,
+                Complaining = CreateComplaining.Create(complaining)
             };
             return View(command);
         }
         [HttpPost]
         public async Task<IActionResult> Create ( CreatePrimaryVote command )
         {
+            var complaining = await _comService.GetByCaseIdAsync(command.CaseId);
+
             if ( !ModelState.IsValid )
             {
                 command.Verdicts = await _prvService.GetSelectedVotesAsync();
                 command.Violations = await _violationService.GetSelectedListAsync();
+                command.Users = await _userService.GetUsersNameAsync(SD.Badavi);
+                command.Complaining = CreateComplaining.Create(complaining);
                 return View(command);
             }
 
@@ -90,8 +112,12 @@ namespace DisciplinarySystem.Presentation.Controllers.PrimaryVotes
             }
 
             var command = UpdatePrimaryVote.Create(entity);
+
+            var complaining = await _comService.GetByCaseIdAsync(entity.Violation.CaseId);
             command.Violations = await _violationService.GetSelectedListAsync();
             command.Verdicts = await _prvService.GetSelectedVotesAsync();
+            command.Users = await _userService.GetUsersNameAsync(SD.Badavi);
+            command.Complaining = CreateComplaining.Create(complaining);
             return View(command);
         }
         [HttpPost]
@@ -99,8 +125,11 @@ namespace DisciplinarySystem.Presentation.Controllers.PrimaryVotes
         {
             if ( !ModelState.IsValid )
             {
-                command.Verdicts = await _prvService.GetSelectedVotesAsync();
+                var complaining = await _comService.GetByCaseIdAsync(command.CaseId);
                 command.Violations = await _violationService.GetSelectedListAsync();
+                command.Verdicts = await _prvService.GetSelectedVotesAsync();
+                command.Users = await _userService.GetUsersNameAsync(SD.Badavi);
+                command.Complaining = CreateComplaining.Create(complaining);
                 return View(command);
             }
 

@@ -3,6 +3,8 @@ using DisciplinarySystem.Application.Cases.Interfaces;
 using DisciplinarySystem.Application.Cases.ViewModels;
 using DisciplinarySystem.Domain.Complaints.Enums;
 using DisciplinarySystem.Domain.Complaints.Interfaces;
+using DisciplinarySystem.Domain.Epistles;
+using DisciplinarySystem.SharedKernel.Common;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
 
@@ -12,11 +14,13 @@ namespace DisciplinarySystem.Application.Cases
     {
         private readonly ICaseReposiotry _caseRepo;
         private readonly IComplaintRepository _complaintRepo;
+        private readonly IRepository<Epistle> _epistleRepo;
 
-        public CaseService ( ICaseReposiotry caseRepo , IComplaintRepository complaintRepo )
+        public CaseService ( ICaseReposiotry caseRepo , IComplaintRepository complaintRepo , IRepository<Epistle> epistleRepo )
         {
             _caseRepo = caseRepo;
             _complaintRepo = complaintRepo;
+            _epistleRepo = epistleRepo;
         }
 
         public async Task<Case> FullInformationAsync ( long id )
@@ -131,10 +135,18 @@ namespace DisciplinarySystem.Application.Cases
         public async Task<bool> RemoveAsync ( long id )
         {
             var entity = await _caseRepo.FirstOrDefaultAsync(u => u.Id == id ,
-                include: source => source.Include(u => u.Complaint));
+                include: source => source.Include(u => u.Complaint)
+                .Include(u => u.Epistles)
+                .ThenInclude(u => u.Documents));
 
             if ( entity == null )
                 return false;
+
+            entity.Epistles.ToList().ForEach(item =>
+            {
+                item.Documents.ToList().ForEach(doc => doc.RemoveFile());
+                _epistleRepo.Remove(item);
+            });
 
             _caseRepo.Remove(entity);
             var complaint = entity.Complaint;

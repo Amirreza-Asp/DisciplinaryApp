@@ -48,17 +48,23 @@
 
 
 	<div class="row">
-		<div class="mb-3 col-md-4">
+		<div class="mb-3 col-md-6">
 			<label class="form-label">نقش:</label>
 			<div class="dropdown">
 				<input value="@Model.Role.Title" class="form-control" readonly />
 			</div>
 		</div>
-		<div class="mb-3 col-md-4">
+		<div class="mb-3 col-md-6">
+			<label class="form-label">نوع فعالیت:</label>
+			<div class="dropdown">
+				<input value="@Model.Type" class="form-control" readonly />
+			</div>
+		</div>
+		<div class="mb-3 col-md-6">
 			<label class="form-label">تاریخ حضور:</label>
 			<input class="form-control" value="@startDate" readonly>
 		</div>
-		<div class="mb-3 col-md-4">
+		<div class="mb-3 col-md-6">
 			<label class="form-label">تاریخ پایان:</label>
 			<input class="form-control" value="@endDate" readonly>
 		</div>

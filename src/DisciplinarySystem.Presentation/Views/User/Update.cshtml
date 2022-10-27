@@ -98,17 +98,24 @@
 
 		
 		<div class="row">
-			<div class="mb-3 col-md-6">
+			<div class="mb-3 col-md-4">
 				<label class="form-label">نقش:</label>
 				<div class="dropdown">
 					<select dir="rtl" class="form-control" asp-for="RoleId" asp-items="@Model.Roles">
 					</select>
 				</div>
 			</div>
-			<div class="mb-3 col-md-6">
+			<div class="mb-3 col-md-4">
 				<label class="form-label">سطح دسترسی:</label>
 				<div class="dropdown">
 					<select dir="rtl" class="form-control" asp-for="Access" asp-items="@Model.AuthRoles">
+					</select>
+				</div>
+			</div>
+			<div class="mb-3 col-md-4">
+				<label class="form-label">نوع فعالیت:</label>
+				<div class="dropdown">
+					<select dir="rtl" class="form-control" asp-for="Type" asp-items="@Model.GetUserTypes()">
 					</select>
 				</div>
 			</div>

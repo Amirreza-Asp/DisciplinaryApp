@@ -30,7 +30,7 @@ namespace DisciplinarySystem.Application.Users
         public async Task CreateAsync ( CreateUser command )
         {
             var user = new User(command.FullName , command.NationalCode.ToString() ,
-                command.StartDate , command.EndDate , command.RoleId);
+                command.StartDate , command.EndDate , command.RoleId , command.Type);
 
             var userApi = await _userApi.GetUserAsync(user.NationalCode);
 
@@ -84,9 +84,9 @@ namespace DisciplinarySystem.Application.Users
             }).ToList();
         }
 
-        public async Task<IEnumerable<string>> GetUsersNameAsync ()
+        public async Task<IEnumerable<string>> GetUsersNameAsync ( String type )
         {
-            return await _userRepo.GetAllAsync(u => u.AttendenceTime.To.Date > DateTime.Now.Date , select: u => u.FullName);
+            return await _userRepo.GetAllAsync(filter: u => u.AttendenceTime.To.Date > DateTime.Now.Date && u.Type == type , select: u => u.FullName);
         }
 
         public async Task UpdateAsync ( UpdateUser command )
@@ -99,7 +99,8 @@ namespace DisciplinarySystem.Application.Users
                 .WithNationalCode(command.NationalCode)
                 .WithStartDate(command.StartDate)
                 .WithEndDate(command.EndDate)
-                .WithRoleId(command.RoleId);
+                .WithRoleId(command.RoleId)
+                .WithType(command.Type);
 
             _userRepo.Update(user);
             await _userRepo.SaveAsync();

@@ -1,4 +1,6 @@
-﻿namespace DisciplinarySystem.Domain.Authentication
+﻿using DisciplinarySystem.Domain.Commonications;
+
+namespace DisciplinarySystem.Domain.Authentication
 {
     public class AuthUser : BaseEntity<long>
     {
@@ -29,6 +31,7 @@
 
 
         public AuthRole Role { get; private set; }
+        public ICollection<SMS> SMSCollection { get; set; }
 
 
         public AuthUser WithPassword ( String password )

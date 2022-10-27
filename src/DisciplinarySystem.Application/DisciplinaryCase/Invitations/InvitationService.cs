@@ -47,9 +47,9 @@ namespace DisciplinarySystem.Application.Invitations
         public async Task CreateAsync ( CreateInvitation command , IFormFileCollection files )
         {
             var invPersons = JsonConvert.DeserializeObject<List<InvitationsInfo>>(command.PersonsId);
-            var complaining = invPersons?.Where(u => u.Optgroup == "متشاکی").FirstOrDefault();
-            var plaintiff = invPersons?.Where(u => u.Optgroup == "شاکی").FirstOrDefault();
-            var users = invPersons?.Where(u => u.Optgroup == "اعضای کمیته").ToList();
+            var complaining = invPersons?.Where(u => u.Optgroup == SD.ComplainingGroup).FirstOrDefault();
+            var plaintiff = invPersons?.Where(u => u.Optgroup == SD.PlaitiffGroup).FirstOrDefault();
+            var users = invPersons?.Where(u => u.Optgroup == SD.TajdidUserGroup || u.Optgroup == SD.BadaviUserGroup).ToList();
             var date = DateTimeConvertor.GetDateFromString(command.InviteDate);
 
             await SendSms(date , users , complaining , plaintiff , command.Description);
@@ -113,7 +113,7 @@ namespace DisciplinarySystem.Application.Invitations
                 {
                     Id = u.UserId ,
                     Name = u.User.FullName ,
-                    Optgroup = "اعضای کمیته"
+                    Optgroup = u.User.Type == SD.Tajdid ? SD.TajdidUserGroup : SD.BadaviUserGroup
                 }).ToList();
 
             if ( entity.ComplainingId.HasValue )
@@ -121,7 +121,7 @@ namespace DisciplinarySystem.Application.Invitations
                 {
                     Id = entity.ComplainingId.Value ,
                     Name = entity.Complaining.FullName ,
-                    Optgroup = "متشاکی"
+                    Optgroup = SD.ComplainingGroup
                 });
 
             if ( entity.PlaintiffId.HasValue )
@@ -129,7 +129,7 @@ namespace DisciplinarySystem.Application.Invitations
                 {
                     Id = entity.PlaintiffId.Value ,
                     Name = entity.Plaintiff.FullName ,
-                    Optgroup = "شاکی"
+                    Optgroup = SD.PlaitiffGroup
                 });
 
             return persons;
@@ -137,20 +137,32 @@ namespace DisciplinarySystem.Application.Invitations
 
         public async Task<List<SelectListItem>> GetPersonsAsync ( long caseId )
         {
-            var selectListGroup = new SelectListGroup { Name = "اعضای کمیته" };
+            var selectListBadaviGroup = new SelectListGroup { Name = SD.BadaviUserGroup };
 
             var persons = _userRepo.GetAll<SelectListItem>(
+                filter: u => u.Type == SD.Badavi ,
                 select: entity => new SelectListItem
                 {
                     Text = entity.FullName ,
                     Value = entity.Id.ToString() ,
-                    Group = selectListGroup
+                    Group = selectListBadaviGroup
                 }).ToList();
+
+            var selectListTajdidGroup = new SelectListGroup { Name = SD.TajdidUserGroup };
+            persons.AddRange(_userRepo.GetAll<SelectListItem>(
+                filter: u => u.Type == SD.Tajdid ,
+                select: entity => new SelectListItem
+                {
+                    Text = entity.FullName ,
+                    Value = entity.Id.ToString() ,
+                    Group = selectListTajdidGroup
+                }));
 
             var caseEntity = await _caseRepo.FirstOrDefaultAsync(
                     filter: u => u.Id == caseId ,
                     include: source => source.Include(u => u.Complaint).ThenInclude(u => u.Complaining)
                                                 .Include(u => u.Complaint).ThenInclude(u => u.Plaintiff));
+
             persons.Insert(0 , new SelectListItem
             {
                 Group = new SelectListGroup { Name = "متشاکی" } ,
@@ -245,7 +257,7 @@ namespace DisciplinarySystem.Application.Invitations
             var invPersons = JsonConvert.DeserializeObject<List<InvitationsInfo>>(command.NewPersonsId);
             var complaining = invPersons.Where(u => u.Optgroup == SD.ComplainingGroup).FirstOrDefault();
             var plaintiff = invPersons.Where(u => u.Optgroup == SD.PlaitiffGroup).FirstOrDefault();
-            var users = invPersons.Where(u => u.Optgroup == SD.UserGroup).ToList();
+            var users = invPersons.Where(u => u.Optgroup == SD.TajdidUserGroup || u.Optgroup == SD.BadaviUserGroup).ToList();
             var date = DateTimeConvertor.GetDateFromString(command.InviteDate);
 
             entity.WithSubject(command.Subject)

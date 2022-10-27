@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using DisciplinarySystem.SharedKernel;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace DisciplinarySystem.Application.Users.ViewModels.User
@@ -22,6 +23,9 @@ namespace DisciplinarySystem.Application.Users.ViewModels.User
         [Required(ErrorMessage = "تاریخ پایان را وارد کنید")]
         public DateTime EndDate { get; set; }
 
+        [Required(ErrorMessage = "نوع فعالیت")]
+        public String Type { get; set; }
+
         public long Access { get; set; }
 
         public List<SelectListItem>? Roles { get; set; }
@@ -33,5 +37,12 @@ namespace DisciplinarySystem.Application.Users.ViewModels.User
         {
             return String.IsNullOrEmpty(FullName) && String.IsNullOrEmpty(NationalCode);
         }
+
+        public List<SelectListItem> GetUserTypes () =>
+            new List<SelectListItem>
+            {
+                new SelectListItem{Text = SD.Badavi , Value = SD.Badavi},
+                new SelectListItem{Text = SD.Tajdid , Value = SD.Tajdid}
+            };
     }
 }

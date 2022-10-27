@@ -6,20 +6,21 @@ namespace DisciplinarySystem.Persistence.Mappings.Users
 {
     public class UserMappings : IEntityTypeConfiguration<User>
     {
-        public void Configure(EntityTypeBuilder<User> builder)
+        public void Configure ( EntityTypeBuilder<User> builder )
         {
             builder.HasKey(u => u.Id);
             builder.Property(u => u.Id).ValueGeneratedNever();
 
             builder.Property(b => b.CreateDate).HasDefaultValueSql("GETDATE()");
             builder.Property(b => b.FullName);
+            builder.Property(b => b.Type);
 
-            builder.OwnsOne(p => p.NationalCode, p =>
+            builder.OwnsOne(p => p.NationalCode , p =>
             {
                 p.Property(u => u.Value).HasColumnName("NationalCode").HasMaxLength(10);
             });
 
-            builder.OwnsOne(p => p.AttendenceTime, p =>
+            builder.OwnsOne(p => p.AttendenceTime , p =>
             {
                 p.Property(u => u.From).HasColumnName("StartDate");
                 p.Property(u => u.To).HasColumnName("EndDate");

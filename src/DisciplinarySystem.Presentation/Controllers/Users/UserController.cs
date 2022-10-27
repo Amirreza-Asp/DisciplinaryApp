@@ -60,13 +60,8 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
 
         public async Task<IActionResult> Create ()
         {
-            var positions = await _positionApi.GetPositionsAsync();
-            var command = new CreateUser
-            {
-                Roles = await _userService.GetSelectListRolesAsync() ,
-                AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() }) ,
-                Positions = positions.Select(u => new SelectListItem { Text = u.Title , Value = u.Title })
-            };
+            var command = new CreateUser();
+            command = await FillUserInfo(command);
             return View(command);
         }
         [HttpPost]
@@ -78,11 +73,7 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
 
             if ( !ModelState.IsValid )
             {
-                command.Roles = await _userService.GetSelectListRolesAsync();
-                command.AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() });
-
-                var positions = await _positionApi.GetPositionsAsync();
-                command.Positions = positions.Select(u => new SelectListItem { Text = u.Title , Value = u.Title });
+                command = await FillUserInfo(command);
                 return View(command);
             }
 
@@ -90,19 +81,22 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
             if ( info == null )
             {
                 TempData[SD.Error] = "کد ملی وارد شده در سیستم وجود ندارد";
-                command.Roles = await _userService.GetSelectListRolesAsync();
-                command.AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() });
-
-                var positions = await _positionApi.GetPositionsAsync();
-                command.Positions = positions.Select(u => new SelectListItem { Text = u.Title , Value = u.Title });
+                command = await FillUserInfo(command);
                 return View(command);
             }
 
+            if ( String.IsNullOrEmpty(info.Mobile) )
+            {
+                TempData[SD.Warning] = $"شماره تلفن {String.Concat(info.Name + " " + info.Lastname)} در سیستم ثبت نشده است";
+                command = await FillUserInfo(command);
+                return View(command);
+            }
 
             await _userService.CreateAsync(command);
             TempData[SD.Success] = "عضو جدید به کمیته اضافه شد";
             return RedirectToAction(nameof(Index) , _filters);
         }
+
 
         public async Task<IActionResult> Update ( Guid id )
         {
@@ -116,44 +110,35 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
 
             var command = UpdateUser.Create(user);
             command.Access = await _authUserRepo.FirstOrDefaultSelectAsync<long>(filter: u => u.NationalCode.Value == user.NationalCode.Value , select: s => s.RoleId);
-            command.Roles = await _userService.GetSelectListRolesAsync();
-            command.AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() });
-            var positions = await _positionApi.GetPositionsAsync();
-            command.Positions = positions.Select(u => new SelectListItem { Text = u.Title , Value = u.Title });
+            command = await FillUpdateUserInfo(command);
             return View(command);
         }
         [HttpPost]
         public async Task<IActionResult> Update ( UpdateUser command )
         {
             PersianCalendar pc = new PersianCalendar();
-            command.StartDate = command.StartDate == default ? default : new DateTime(command.StartDate.Year , command.StartDate.Month , command.StartDate.Day , pc);
-            command.EndDate = command.EndDate == default ? default : new DateTime(command.EndDate.Year , command.EndDate.Month , command.EndDate.Day , pc);
+            command.StartDate = command.StartDate.ToMiladi();
+            command.EndDate = command.EndDate.ToMiladi();
             var roleId = await _authUserRepo.FirstOrDefaultSelectAsync<long>(filter: u => u.NationalCode.Value == command.NationalCode , select: s => s.RoleId);
             command.Access = roleId;
 
 
             if ( !ModelState.IsValid )
             {
-                var positions = await _positionApi.GetPositionsAsync();
-                command.Positions = positions.Select(u => new SelectListItem { Text = u.Title , Value = u.Title });
-                command.Roles = await _userService.GetSelectListRolesAsync();
-                command.AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() });
+                command = await FillUpdateUserInfo(command);
                 return View(command);
             }
 
             var info = await _userApi.GetUserAsync(command.NationalCode.ToString());
             if ( info == null )
             {
-                var positions = await _positionApi.GetPositionsAsync();
-                command.Positions = positions.Select(u => new SelectListItem { Text = u.Title , Value = u.Title });
+                command = await FillUpdateUserInfo(command);
                 TempData[SD.Error] = "کد ملی وارد شده در سیستم وجود ندارد";
-                command.Roles = await _userService.GetSelectListRolesAsync();
-                command.AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() });
                 return View(command);
             }
 
             await _userService.UpdateAsync(command);
-            TempData[SD.Success] = "ویرایش با موفقیت انجام شد";
+            TempData[SD.Info] = "ویرایش با موفقیت انجام شد";
             return RedirectToAction(nameof(Index) , _filters);
         }
 
@@ -191,6 +176,7 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
                 }
             });
         }
+
         private async Task<IEnumerable<User>> GetFilteredUsers ( UserFilter filters )
         {
             return await _userService.GetListAsync(
@@ -223,6 +209,25 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
                                     entity.AttendenceTime.To.Year.Equals(filters.EndDate.Year) &&
                                     entity.AttendenceTime.To.Month.Equals(filters.EndDate.Month) &&
                                     entity.AttendenceTime.To.Day.Equals(filters.EndDate.Day) ));
+        }
+
+        private async Task<CreateUser> FillUserInfo ( CreateUser command )
+        {
+            command.Roles = await _userService.GetSelectListRolesAsync();
+            command.AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() });
+
+            var positions = await _positionApi.GetPositionsAsync();
+            command.Positions = positions.Select(u => new SelectListItem { Text = u.Title , Value = u.Title });
+            return command;
+        }
+
+        private async Task<UpdateUser> FillUpdateUserInfo ( UpdateUser command )
+        {
+            command.Roles = await _userService.GetSelectListRolesAsync();
+            command.AuthRoles = await _authRoleRepo.GetAllAsync<SelectListItem>(select: entity => new SelectListItem { Text = $"{entity.PersianTitle()} ({entity.Description})" , Value = entity.Id.ToString() });
+            var positions = await _positionApi.GetPositionsAsync();
+            command.Positions = positions.Select(u => new SelectListItem { Text = u.Title , Value = u.Title });
+            return command;
         }
     }
 }

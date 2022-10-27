@@ -3,6 +3,7 @@
 @using DisciplinarySystem.Presentation.Controllers.Epistles.ViewModels;
 @using DisciplinarySystem.Presentation.Controllers.Complaints.ViewModels;
 @using DisciplinarySystem.Presentation.Controllers.FinalVotes.ViewModels
+@using DisciplinarySystem.SharedKernel
 @inject DisciplinarySystem.Application.Complaints.Interfaces.IComplainingService _comService;
 @inject DisciplinarySystem.Application.Users.Interfaces.IUserService _userService;
 
@@ -137,7 +138,7 @@
 			var finalVote = Model.Violations.Where(u => u.FinalVote != null).Select(u => u.FinalVote).First();
 
 			var finalVoteDetails = FinalVoteDetails.Create(finalVote);
-			finalVoteDetails.Users = await _userService.GetUsersNameAsync();
+			finalVoteDetails.Users = await _userService.GetUsersNameAsync(SD.Tajdid);
 			finalVoteDetails.Complaining = CreateComplaining.Create(await _comService.GetByCaseIdAsync(finalVote.Violation.CaseId));
 
 

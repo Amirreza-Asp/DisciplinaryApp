@@ -70,7 +70,7 @@ namespace DisciplinarySystem.Persistence.Data.Initializer
             var managerRole = _roleManager.FirstOrDefault(u => u.Title == SD.Managment);
 
             var role = await _roleRepo.FirstOrDefaultAsync(u => u.Title == "مدیریت");
-            _userRepo.Add(new User(user.Name + " " + user.Lastname , user.Idmelli , DateTime.Now , DateTime.Now.AddYears(2) , role.Id));
+            _userRepo.Add(new User(user.Name + " " + user.Lastname , user.Idmelli , DateTime.Now , DateTime.Now.AddYears(2) , role.Id , SD.Tajdid));
 
             await _userManager.SaveAsync();
         }

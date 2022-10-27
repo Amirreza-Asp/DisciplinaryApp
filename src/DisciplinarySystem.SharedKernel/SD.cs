@@ -2,11 +2,13 @@
 {
     public static class SD
     {
+        // notification types
         public const string Success = "Success";
         public const string Error = "Error";
         public const string Warning = "Warning";
         public const string Info = "Info";
 
+        // docs path
         public const string ViolationDocumentPath = $"/files/violation/";
         public const string ComplaintDocumentPath = $"/files/complaint/";
         public const string EpistleDocumentPath = $"/files/epistle/";
@@ -21,8 +23,14 @@
         public const string CentralCommitteeVoteDocumentPath = $"/files/central committee vote/";
 
 
+        // user types
+        public const String Badavi = "بدوی";
+        public const String Tajdid = "تجدید نظر";
 
+        // case persons
         public const string UserGroup = "اعضای کمیته";
+        public const String BadaviUserGroup = "اعضای کمیته بدوی";
+        public const String TajdidUserGroup = "اعضای کمیته تجدید نظر";
         public const string ComplainingGroup = "متشاکی";
         public const string PlaitiffGroup = "شاکی";
 

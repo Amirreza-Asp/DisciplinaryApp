@@ -5,15 +5,16 @@
         public Guid Id { get; set; }
 
 
-        public static UpdateUser Create(Domain.Users.User entity)
+        public static UpdateUser Create ( Domain.Users.User entity )
         {
             return new UpdateUser
             {
-                Id = entity.Id,
-                FullName = entity.FullName,
-                NationalCode = entity.NationalCode,
-                StartDate = entity.AttendenceTime.From,
-                EndDate = entity.AttendenceTime.To,
+                Id = entity.Id ,
+                FullName = entity.FullName ,
+                NationalCode = entity.NationalCode ,
+                StartDate = entity.AttendenceTime.From ,
+                EndDate = entity.AttendenceTime.To ,
+                Type = entity.Type ,
                 RoleId = entity.RoleId
             };
         }

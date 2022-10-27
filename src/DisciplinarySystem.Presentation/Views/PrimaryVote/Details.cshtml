@@ -1,10 +1,10 @@
 ﻿@using DisciplinarySystem.Application.Helpers
 @using DisciplinarySystem.Presentation.Models
-@model DisciplinarySystem.Domain.PrimaryVotes.PrimaryVote
+@model DisciplinarySystem.Application.PrimaryVotes.ViewModels.UpdatePrimaryVote
 
 
 @{
-	var steps = new CaseSteps { CaseId = Model.Violation.CaseId, ActiveStep = "PrimaryVote" };
+	var steps = new CaseSteps { CaseId = Model.CaseId, ActiveStep = "PrimaryVote" };
 	<partial name="_CaseStepsPartial" model="@steps" />
 }
 
@@ -21,7 +21,7 @@
 	<div class="d-flex gap-1 flex-column flex-sm-row">
 		<div>
 			<label class="form-label">شماره پرونده:</label>
-			<input class="form-control" asp-for="Violation.CaseId" readonly>
+			<input class="form-control" asp-for="CaseId" readonly>
 		</div>
 		<div>
 			<label class="form-label">تاریخ ثبت:</label>
@@ -32,13 +32,57 @@
 
 <div class="card shadow-sm">
 	<section class="row">
+
+		<div class="mb-3 col-md-3 col-sm-4">
+			<label class="form-label">شماره دانشجویی:</label>
+			<input type="number" class="form-control" asp-for="Complaining.StudentNumber" readonly>
+		</div>
+		<div class="mb-3 col-md-3 col-sm-4">
+			<label class="form-label">کد ملی:</label>
+			<input type="number" class="form-control" asp-for="Complaining.NationalCode" readonly>
+		</div>
+
+		<div class="mb-3 col-md-3 col-sm-4">
+			<label class="form-label">نام و نام خانوادگی:</label>
+			<input type="text" class="form-control" asp-for="Complaining.FullName" readonly>
+		</div>
+		<div class="mb-3 col-md-3 col-sm-4">
+			<label class="form-label">نام دانشکده:</label>
+			<input type="text" class="form-control" asp-for="Complaining.College" readonly>
+		</div>
+
+		<div class="mb-3 col-md-3 col-sm-4">
+			<label class="form-label">نام گروه آموزشی:</label>
+			<input type="text" class="form-control" asp-for="Complaining.EducationGroup" readonly>
+		</div>
+
+		<div class="mb-3 col-md-3 col-sm-4">
+			<label class="form-label">مقطع تحصیلی:</label>
+			<input type="text" class="form-control" asp-for="Complaining.Grade" readonly>
+		</div>
+
+	</section>
+	<div class="committee-members ">
+		<h3>اعضای کمیته:</h3>
+		<div class="d-flex gap-2 mt-3">
+			@if ( Model.Users != null )
+			{
+				@foreach ( var item in Model.Users )
+				{
+					<h5><span class="badge bg-info p-2">@item</span></h5>
+				}
+			}
+		</div>
+	</div>
+	<hr>
+	<section class="row">
 		<div class="mb-3 col-md-4">
 			<label class="form-label">عنوان تخلف:</label>
-			<input type="text" class="form-control" value="@Model.Violation.Title" readonly>
+			<input type="text" class="form-control" value="@Model.Violations.First(u=>Guid.Parse(u.Value) == Model.ViolationId).Text" readonly>
 		</div>
 		<div class="mb-3 col-md-4">
 			<label class="form-label">حکم رای اولیه:</label>
-			<input class="form-control" value="@Model.Verdict.Title" readonly />
+			<input class="form-control" value="@Model.Verdicts.First(u=>u.Value == Model.VerdictId.ToString()).Text" readonly />
 		</div>
 		<div class="mb-3">
 			<label class="form-label">شرح:</label>
@@ -62,7 +106,7 @@
 						</tr>
 					</thead>
 					<tbody>
-						@foreach (var item in Model.Documents)
+						@foreach (var item in Model.CurrentDocuments)
 						{
 							<tr>
 								<td>@item.Name</td>

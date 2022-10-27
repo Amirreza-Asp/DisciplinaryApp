@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using DisciplinarySystem.Application.Complaints.ViewModels.Create;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.ComponentModel.DataAnnotations;
 
 namespace DisciplinarySystem.Application.PrimaryVotes.ViewModels
@@ -17,6 +18,10 @@ namespace DisciplinarySystem.Application.PrimaryVotes.ViewModels
         [Required(ErrorMessage = "تخلف را وارد کنید")]
         public Guid ViolationId { get; set; }
         public long CaseId { get; set; }
+
+
+        public CreateComplaining Complaining { get; set; }
+        public IEnumerable<String>? Users { get; set; }
 
         public IEnumerable<SelectListItem>? Violations { get; set; }
         public IEnumerable<SelectListItem>? Verdicts { get; set; }

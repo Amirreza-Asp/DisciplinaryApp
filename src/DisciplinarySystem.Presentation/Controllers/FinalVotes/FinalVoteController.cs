@@ -60,7 +60,7 @@ namespace DisciplinarySystem.Presentation.Controllers.FinalVotes
 
 
             var vm = FinalVoteDetails.Create(entity);
-            vm.Users = await _userService.GetUsersNameAsync();
+            vm.Users = await _userService.GetUsersNameAsync(SD.Tajdid);
             vm.Complaining = CreateComplaining.Create(await _comService.GetByCaseIdAsync(entity.Violation.CaseId));
 
             return View(vm);
@@ -81,7 +81,7 @@ namespace DisciplinarySystem.Presentation.Controllers.FinalVotes
                 CaseId = caseId ,
                 Violations = await _violatonService.GetSelectedListAsync() ,
                 Verdicts = await _fvoService.GetSelectedVotesAsync() ,
-                Users = await _userService.GetUsersNameAsync() ,
+                Users = await _userService.GetUsersNameAsync(SD.Tajdid) ,
                 Complaining = CreateComplaining.Create(complaining)
             };
             return View(command);
@@ -93,7 +93,7 @@ namespace DisciplinarySystem.Presentation.Controllers.FinalVotes
             {
                 command.Verdicts = await _fvoService.GetSelectedVotesAsync();
                 command.Violations = await _violatonService.GetSelectedListAsync();
-                command.Users = await _userService.GetUsersNameAsync();
+                command.Users = await _userService.GetUsersNameAsync(SD.Tajdid);
                 return View(command);
             }
 
@@ -114,7 +114,7 @@ namespace DisciplinarySystem.Presentation.Controllers.FinalVotes
 
             var command = UpdateFinalVote.Create(entity);
             command.Verdicts = await _fvoService.GetSelectedVotesAsync();
-            command.Users = await _userService.GetUsersNameAsync();
+            command.Users = await _userService.GetUsersNameAsync(SD.Tajdid);
             command.Violations = await _violatonService.GetSelectedListAsync();
             command.Complaining = CreateComplaining.Create(await _comService.GetByCaseIdAsync(entity.Violation.CaseId));
             return View(command);
@@ -125,7 +125,7 @@ namespace DisciplinarySystem.Presentation.Controllers.FinalVotes
             if ( !ModelState.IsValid )
             {
                 command.Verdicts = await _fvoService.GetSelectedVotesAsync();
-                command.Users = await _userService.GetUsersNameAsync();
+                command.Users = await _userService.GetUsersNameAsync(SD.Tajdid);
                 command.Violations = await _violatonService.GetSelectedListAsync();
                 return View(command);
             }

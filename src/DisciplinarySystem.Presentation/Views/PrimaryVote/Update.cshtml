@@ -35,6 +35,50 @@
 
 	<div class="card shadow-sm">
 		<section class="row">
+
+			<div class="mb-3 col-md-3 col-sm-4">
+				<label class="form-label">شماره دانشجویی:</label>
+				<input type="number" class="form-control" asp-for="Complaining.StudentNumber" readonly>
+			</div>
+			<div class="mb-3 col-md-3 col-sm-4">
+				<label class="form-label">کد ملی:</label>
+				<input type="number" class="form-control" asp-for="Complaining.NationalCode" readonly>
+			</div>
+
+			<div class="mb-3 col-md-3 col-sm-4">
+				<label class="form-label">نام و نام خانوادگی:</label>
+				<input type="text" class="form-control" asp-for="Complaining.FullName" readonly>
+			</div>
+			<div class="mb-3 col-md-3 col-sm-4">
+				<label class="form-label">نام دانشکده:</label>
+				<input type="text" class="form-control" asp-for="Complaining.College" readonly>
+			</div>
+
+			<div class="mb-3 col-md-3 col-sm-4">
+				<label class="form-label">نام گروه آموزشی:</label>
+				<input type="text" class="form-control" asp-for="Complaining.EducationGroup" readonly>
+			</div>
+
+			<div class="mb-3 col-md-3 col-sm-4">
+				<label class="form-label">مقطع تحصیلی:</label>
+				<input type="text" class="form-control" asp-for="Complaining.Grade" readonly>
+			</div>
+
+		</section>
+		<div class="committee-members ">
+			<h3>اعضای کمیته:</h3>
+			<div class="d-flex gap-2 mt-3">
+				@if (Model.Users != null)
+				{
+					@foreach (var item in Model.Users)
+					{
+						<h5><span class="badge bg-info p-2">@item</span></h5>
+					}
+				}
+			</div>
+		</div>
+		<hr>
+		<section class="row">
 			<div class="mb-3 col-md-4">
 				<label class="form-label">عنوان تخلف:</label>
 				<div class="dropdown">

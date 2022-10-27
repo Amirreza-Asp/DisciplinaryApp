@@ -1,4 +1,5 @@
 ﻿using DisciplinarySystem.Domain.Authentication;
+using DisciplinarySystem.Domain.Commonications;
 using DisciplinarySystem.Domain.Complaints;
 using DisciplinarySystem.Domain.Defences;
 using DisciplinarySystem.Domain.DisciplinaryCase.Cases;
@@ -28,6 +29,9 @@ namespace DisciplinarySystem.Persistence.Data
         {
             _mediator = mediator;
         }
+
+        // commonication
+        public DbSet<SMS> SMS { get; set; }
 
         // auth
         public DbSet<AuthUser> AuthUser { get; set; }
