@@ -130,11 +130,14 @@ namespace DisciplinarySystem.Application.Complaints
             if ( complaint == null )
                 return false;
 
-            complaint.Case.Epistles.ToList().ForEach(item =>
+            if ( complaint.Case != null && complaint.Case.Epistles != null )
             {
-                item.Documents.ToList().ForEach(doc => doc.RemoveFile());
-                _epistleRepo.Remove(item);
-            });
+                complaint.Case.Epistles.ToList().ForEach(item =>
+                {
+                    item.Documents.ToList().ForEach(doc => doc.RemoveFile());
+                    _epistleRepo.Remove(item);
+                });
+            }
 
             _complainingRepo.Remove(complaint.Complaining);
             _plaintiffRepo.Remove(complaint.Plaintiff);

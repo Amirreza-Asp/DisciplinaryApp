@@ -142,11 +142,14 @@ namespace DisciplinarySystem.Application.Cases
             if ( entity == null )
                 return false;
 
-            entity.Epistles.ToList().ForEach(item =>
+            if ( entity.Epistles != null )
             {
-                item.Documents.ToList().ForEach(doc => doc.RemoveFile());
-                _epistleRepo.Remove(item);
-            });
+                entity.Epistles.ToList().ForEach(item =>
+                {
+                    item.Documents.ToList().ForEach(doc => doc.RemoveFile());
+                    _epistleRepo.Remove(item);
+                });
+            }
 
             _caseRepo.Remove(entity);
             var complaint = entity.Complaint;

@@ -3,7 +3,7 @@
     printJS({
         printable: id,
         type: 'html',
-        css: ['../../css/main.min.css', 'https://pro.fontawesome.com/releases/v5.10.0/css/all.css', '../../css/pages/full-information.css', '../../css/pages/print.css'],
+        css: ['../../css/main.min.css', '../../lib/fontawesome-pro-6.1.1-web/css/all.min.css', '../../css/pages/full-information.css', '../../css/pages/print.css'],
         targetStyles: ['*'],
         scanStyles: false
     })
