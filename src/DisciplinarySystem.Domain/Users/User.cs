@@ -1,4 +1,5 @@
-﻿using DisciplinarySystem.Domain.Invitations;
+﻿using DisciplinarySystem.Domain.Authentication;
+using DisciplinarySystem.Domain.Invitations;
 using DisciplinarySystem.Domain.Meetings;
 
 namespace DisciplinarySystem.Domain.Users
@@ -26,6 +27,7 @@ namespace DisciplinarySystem.Domain.Users
 
 
         public Role Role { get; }
+        public AuthUser AuthUser { get; private set; }
         public ICollection<InvitationUser> InvitationUsers { get; private set; }
         public ICollection<MeetingUsers> MeetingUsers { get; set; }
 

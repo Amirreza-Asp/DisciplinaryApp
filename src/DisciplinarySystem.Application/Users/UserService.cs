@@ -35,7 +35,8 @@ namespace DisciplinarySystem.Application.Users
             var userApi = await _userApi.GetUserAsync(user.NationalCode);
 
 
-            _authUserRepo.Add(new AuthUser(userApi.Mobile , userApi.Idmelli , userApi.Name , userApi.Lastname , userApi.Idmelli , _passwordHasher.HashPassword(userApi.Idmelli) , command.Access));
+            _authUserRepo.Add(new AuthUser(userApi.Mobile , userApi.Idmelli , userApi.Name
+                , userApi.Lastname , userApi.Idmelli , _passwordHasher.HashPassword(userApi.Idmelli) , command.Access , user.Id));
 
             _userRepo.Add(user);
             await _userRepo.SaveAsync();
@@ -101,6 +102,13 @@ namespace DisciplinarySystem.Application.Users
                 .WithEndDate(command.EndDate)
                 .WithRoleId(command.RoleId)
                 .WithType(command.Type);
+
+            AuthUser authUser = await _authUserRepo.FirstOrDefaultAsync(u => u.UserId == user.Id);
+            if ( authUser != null )
+            {
+                authUser.WithRoleId(command.Access);
+                _authUserRepo.Update(authUser);
+            }
 
             _userRepo.Update(user);
             await _userRepo.SaveAsync();

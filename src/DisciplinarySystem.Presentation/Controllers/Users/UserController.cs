@@ -10,6 +10,7 @@ using DisciplinarySystem.SharedKernel.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using System.Globalization;
 
 namespace DisciplinarySystem.Presentation.Controllers.Users
@@ -100,16 +101,40 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
 
         public async Task<IActionResult> Update ( Guid id )
         {
-            var user = await _userService.GetById(id);
+            var user = await _userRepo.FirstOrDefaultAsync(
+                filter: entity => entity.Id == id ,
+                include: source => source
+                .Include(u => u.Role)
+                .Include(u => u.AuthUser)
+                    .ThenInclude(u => u.Role));
+
             if ( user == null )
             {
                 TempData[SD.Error] = "کاربر مورد نظر وجود ندارد";
                 return RedirectToAction(nameof(Index) , _filters);
             }
+            if ( user.AuthUser == null )
+            {
+                var authUser = await _authUserRepo.FirstOrDefaultAsync(u =>
+                        u.NationalCode.Value == user.NationalCode.Value && u.UserId == null);
+
+                if ( authUser != null )
+                {
+                    authUser.WithUserId(user.Id);
+                    _authUserRepo.Update(authUser);
+                    await _authUserRepo.SaveAsync();
+                    user = await _userRepo.FirstOrDefaultAsync(
+                            filter: entity => entity.Id == id ,
+                                include: source => source
+                                .Include(u => u.Role)
+                                .Include(u => u.AuthUser)
+                                .ThenInclude(u => u.Role));
+                }
+            }
 
 
             var command = UpdateUser.Create(user);
-            command.Access = await _authUserRepo.FirstOrDefaultSelectAsync<long>(filter: u => u.NationalCode.Value == user.NationalCode.Value , select: s => s.RoleId);
+            command.Access = user.AuthUser == null ? default : user.AuthUser.Role.Id;
             command = await FillUpdateUserInfo(command);
             return View(command);
         }
@@ -119,12 +144,14 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
             PersianCalendar pc = new PersianCalendar();
             command.StartDate = command.StartDate.ToMiladi();
             command.EndDate = command.EndDate.ToMiladi();
-            var roleId = await _authUserRepo.FirstOrDefaultSelectAsync<long>(filter: u => u.NationalCode.Value == command.NationalCode , select: s => s.RoleId);
-            command.Access = roleId;
+            var roleId = await _authUserRepo.FirstOrDefaultSelectAsync<long>(
+                filter: u => u.User.Id == command.Id ,
+                select: s => s.RoleId);
 
 
             if ( !ModelState.IsValid )
             {
+                command.Access = roleId;
                 command = await FillUpdateUserInfo(command);
                 return View(command);
             }
@@ -132,6 +159,7 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
             var info = await _userApi.GetUserAsync(command.NationalCode.ToString());
             if ( info == null )
             {
+                command.Access = roleId;
                 command = await FillUpdateUserInfo(command);
                 TempData[SD.Error] = "کد ملی وارد شده در سیستم وجود ندارد";
                 return View(command);

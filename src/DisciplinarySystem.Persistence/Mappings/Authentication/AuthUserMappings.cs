@@ -28,6 +28,13 @@ namespace DisciplinarySystem.Persistence.Mappings.Authentication
                 .WithMany(b => b.Users)
                 .HasForeignKey(b => b.RoleId);
 
+            builder.HasOne(b => b.User)
+                .WithOne(b => b.AuthUser)
+                .HasForeignKey<AuthUser>(b => b.UserId);
+            builder.Property(b => b.UserId).IsRequired(false);
+
+
+            builder.HasQueryFilter(b => b.IsDeleted == false);
         }
     }
 }

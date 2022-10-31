@@ -86,7 +86,7 @@ namespace DisciplinarySystem.SharedKernel.Common
         public string Trend { get; set; }
 
         [JsonProperty("section")]
-        public long Section { get; set; }
+        public String Section { get; set; }
 
         [JsonProperty("email")]
         public string Email { get; set; }

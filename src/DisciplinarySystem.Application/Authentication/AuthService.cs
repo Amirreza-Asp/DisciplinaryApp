@@ -9,8 +9,6 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using System.Text.Json;
-using static DisciplinarySystem.Application.Authentication.Dtos.UserKhedmat;
 
 namespace DisciplinarySystem.Application.Authentication
 {
@@ -50,59 +48,38 @@ namespace DisciplinarySystem.Application.Authentication
 
         public async Task<LoginResultDto> LoginAsync ( LoginDto command )
         {
-            var user = await _authUserRepo.FirstOrDefaultAsync(
+            var users = await _authUserRepo.GetAllAsync(
                 u => u.UserName == command.UserName ,
                 include: source =>
                     source.Include(u => u.Role));
 
-            if ( user != null )
+            if ( users != null )
             {
-                if ( !_passwordHasher.VerifyPassword(user.Password , command.Password) )
+                var expectedUsers = users.ToList().Where(u => _passwordHasher.VerifyPassword(u.Password , command.Password));
+
+
+
+                if ( !expectedUsers.Any() )
                     return LoginResultDto.Faild("رمز وارد شده اشتباه است");
 
 
-                var appUser = await _userRepo.FirstOrDefaultAsync(u => u.NationalCode.Value == user.NationalCode.Value);
-                if ( appUser == null || appUser.AttendenceTime.To.Date < DateTime.Now.Date )
+                var appUsers = await _userRepo.GetAllAsync(u => u.NationalCode.Value == command.UserName);
+                if ( appUsers == null || appUsers.All(u => u.AttendenceTime.To.Date < DateTime.Now.Date) )
                     return LoginResultDto.Faild("تاریخ حضور شما به پایان رسیده است");
-                if ( appUser == null || appUser.AttendenceTime.From.Date > DateTime.Now.Date )
+                if ( appUsers == null || appUsers.All(u => u.AttendenceTime.From.Date > DateTime.Now.Date) )
                     return LoginResultDto.Faild("تاریخ شروع کار شما شروع نشده");
 
-                await AddClaimsAsync(user);
+                var userWithHeightRole = users.ToList().Where(u => u.Role.Title == SD.Managment).FirstOrDefault();
+                if ( userWithHeightRole == null )
+                    userWithHeightRole = users.ToList().Where(u => u.Role.Title == SD.Admin).FirstOrDefault();
+                if ( userWithHeightRole == null )
+                    userWithHeightRole = users.ToList().First();
+
+                await AddClaimsAsync(userWithHeightRole);
                 return LoginResultDto.Successful();
             }
 
-
-            var request = new HttpRequestMessage(HttpMethod.Post ,
-                  $"https://khedmat.razi.ac.ir/api/KhedmatAPI/khedmat/users?action=auth&username={userName}&password={password}&requestUser={command.UserName}&requestPassword={command.Password}");
-
-            var client = _clientFactory.CreateClient();
-
-            var response = await client.SendAsync(request);
-
-            if ( response.IsSuccessStatusCode )
-            {
-                var result = await response.Content.ReadAsStringAsync();
-                try
-                {
-                    var data1 = JsonSerializer.Deserialize<KhedmatResponseStudent>(result);
-
-                    var userRole = await _roleRepo.FirstOrDefaultAsync(u => u.Title == SD.User);
-                    AuthUser newUser = new AuthUser(data1.userInfo.phone , data1.userInfo.national_code , data1.userInfo.name
-                        , data1.userInfo.last_name , data1.userInfo.username , _passwordHasher.HashPassword(command.Password) , userRole.Id);
-
-                    _authUserRepo.Add(newUser);
-                    await _authUserRepo.SaveAsync();
-                    await AddClaimsAsync(newUser);
-                }
-                catch ( Exception ex )
-                {
-                    return LoginResultDto.Faild(ex.Message);
-                }
-
-                return LoginResultDto.Successful();
-            }
-
-            return LoginResultDto.Faild("نام کاربری یا رمز وارد شده اشتباه است");
+            return LoginResultDto.Faild("نام کاربری وارد شده اشتباه است");
 
         }
 

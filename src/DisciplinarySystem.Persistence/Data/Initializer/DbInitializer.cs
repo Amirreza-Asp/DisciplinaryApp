@@ -61,16 +61,18 @@ namespace DisciplinarySystem.Persistence.Data.Initializer
             }
 
             await _roleManager.SaveAsync();
+            var user = _userApi.GetUserAsync(SD.DefaultNationalCode).GetAwaiter().GetResult();
+            var role = await _roleRepo.FirstOrDefaultAsync(u => u.Title == "مدیریت");
+            var userEntity = new User(user.Name + " " + user.Lastname , user.Idmelli , DateTime.Now , DateTime.Now.AddYears(2) , role.Id , SD.Tajdid);
+            _userRepo.Add(userEntity);
+
+
             var adminRole = await _roleManager.FirstOrDefaultAsync(u => u.Title == SD.Managment);
 
-            var user = _userApi.GetUserAsync(SD.DefaultNationalCode).GetAwaiter().GetResult();
+            _userManager.Add(new AuthUser(user.Mobile , user.Idmelli , user.Name , user.Lastname
+                , user.Idmelli , _hasher.HashPassword(user.Idmelli) , adminRole.Id , userEntity.Id));
 
-            _userManager.Add(new AuthUser(user.Mobile , user.Idmelli , user.Name , user.Lastname , user.Idmelli , _hasher.HashPassword(user.Idmelli) , adminRole.Id));
-
-            var managerRole = _roleManager.FirstOrDefault(u => u.Title == SD.Managment);
-
-            var role = await _roleRepo.FirstOrDefaultAsync(u => u.Title == "مدیریت");
-            _userRepo.Add(new User(user.Name + " " + user.Lastname , user.Idmelli , DateTime.Now , DateTime.Now.AddYears(2) , role.Id , SD.Tajdid));
+            await _userRepo.SaveAsync();
 
             await _userManager.SaveAsync();
         }
