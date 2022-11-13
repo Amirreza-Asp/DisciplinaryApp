@@ -42,8 +42,6 @@ namespace DisciplinarySystem.Presentation.Controllers
 
         public async Task<IActionResult> Index ()
         {
-            await _positionApi.GetPositionsAsync();
-
             var todayMeetings = await _meetService.ListAsync(u => u.HoldingTime.From.Date.Equals(DateTime.Now.Date));
             var tomorrowMeetings = await _meetService.ListAsync(u => u.HoldingTime.From.Date.Equals(DateTime.Now.AddDays(1).Date));
             var yearBegin = DateTime.Now.ShamsiYearBegin();

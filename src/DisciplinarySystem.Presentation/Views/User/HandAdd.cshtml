@@ -1,0 +1,71 @@
+﻿@model DisciplinarySystem.Application.Authentication.Dtos.HandAdd
+
+
+<div class="d-flex justify-content-end mb-3">
+    <button type="button" onclick="history.back()" class="btn btn-secondary d-flex align-items-center">
+        بازگشت
+        <i class="fa fa-angle-left me-2"></i>
+    </button>
+</div>
+
+<div class="d-flex flex-column flex-sm-row align-items-sm-center  justify-content-between mb-2">
+    <h3 class="mb-sm-0 mb-4">افزودن عضو</h3>
+</div>
+
+<form method="post">
+    <div class="card shadow-sm mt-3 mb-1">
+        <div class="row">
+            <div class="mb-3 col-md-4">
+                <label class="form-label">نام:</label>
+                <input id="full-name" type="text" class="form-control" asp-for="Name">
+                <span id="full-valid" asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="mb-3 col-md-4">
+                <label class="form-label">نام خانوادگی:</label>
+                <input id="full-name" type="text" class="form-control" asp-for="Family">
+                <span id="full-valid" asp-validation-for="Family" class="text-danger"></span>
+            </div>
+            <div class="mb-3 col-md-4">
+                <label class="form-label">کد ملی:</label>
+                <input type="number" id="national-code"  class="form-control" asp-for="NationalCode">
+                <span id="national-valid" asp-validation-for="NationalCode" class="text-danger"></span>
+            </div>
+            <div class="mb-3 col-md-4">
+                <label class="form-label">شماره تلفن:</label>
+                <input type="number" id="national-code"  class="form-control" asp-for="PhoneNumber">
+                <span id="national-valid" asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+        </div>
+
+
+        <div class="row">
+            <div class="mb-3 col-md-4">
+                <label class="form-label">نقش:</label>
+                <div class="dropdown">
+                    <select dir="rtl" class="form-control" asp-for="RoleId" asp-items="@Model.Roles">
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 col-md-4">
+                <label class="form-label">سطح دسترسی:</label>
+                <div class="dropdown">
+                    <select dir="rtl" class="form-control" asp-for="Access" asp-items="@Model.AuthRoles">
+                    </select>
+                </div>
+            </div>
+            <div class="mb-3 col-md-4">
+                <label class="form-label">نوع فعالیت:</label>
+                <div class="dropdown">
+                    <select dir="rtl" class="form-control" asp-for="Type" asp-items="@Model.GetTypes()">
+                    </select>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <div class="mt-3 text-center">
+        <button id="submit-btn" class="btn btn--submit">
+            افزودن عضو
+        </button>
+    </div>
+</form>

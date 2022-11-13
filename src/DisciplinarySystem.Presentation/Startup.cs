@@ -36,7 +36,7 @@ namespace DisciplinarySystem.Presentation
                .AddCookie(options =>
                {
                    options.Cookie.HttpOnly = false;
-                   options.ExpireTimeSpan = TimeSpan.FromMinutes(10);
+                   options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
                    options.LoginPath = "/Account/Login";
                    options.AccessDeniedPath = "/Home/AccessDenied";
                    options.SlidingExpiration = true;
@@ -48,7 +48,7 @@ namespace DisciplinarySystem.Presentation
 
             services.AddSession(options =>
             {
-                options.IdleTimeout = TimeSpan.FromMinutes(10);
+                options.IdleTimeout = TimeSpan.FromMinutes(30);
                 options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });

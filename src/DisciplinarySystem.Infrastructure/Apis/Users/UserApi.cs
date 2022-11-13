@@ -18,8 +18,6 @@ namespace DisciplinarySystem.Infrastructure.Apis.Users
 
             client.DefaultRequestVersion = new Version("1.1");
 
-
-
             var res = await client.SendAsync(request);
 
             if ( res.IsSuccessStatusCode )
