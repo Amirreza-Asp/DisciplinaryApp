@@ -1,4 +1,5 @@
 ﻿using DisciplinarySystem.Application.Contracts.Interfaces;
+using DisciplinarySystem.SharedKernel;
 
 namespace DisciplinarySystem.Infrastructure.Apis.Messengers
 {
@@ -6,7 +7,7 @@ namespace DisciplinarySystem.Infrastructure.Apis.Messengers
     {
         public async Task<bool> Send ( String message , String phoneNumber )
         {
-            String url = "https://khedmat.razi.ac.ir/api/KhedmatAPI/message?action=sendSMS&username=GXBsBt9n&password=qwe159asd753&text="
+            String url = $"https://khedmat.razi.ac.ir/api/KhedmatAPI/message?action=sendSMS&username={SD.KhedmatRaziUserName}&password={SD.KhedmatRaziPassword}&text="
                 + message + "&FromOutside=true&MobileNumber={\"MobileNumber\":[\"" + phoneNumber + "\"]}";
             var request = new HttpRequestMessage(HttpMethod.Post , url);
             var handler = new HttpClientHandler()

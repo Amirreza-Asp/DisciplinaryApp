@@ -1,4 +1,5 @@
-﻿using DisciplinarySystem.SharedKernel.Common;
+﻿using DisciplinarySystem.SharedKernel;
+using DisciplinarySystem.SharedKernel.Common;
 using Newtonsoft.Json;
 
 namespace DisciplinarySystem.Infrastructure.Apis.Users
@@ -7,7 +8,7 @@ namespace DisciplinarySystem.Infrastructure.Apis.Users
     {
         public async Task<UserInfo> GetUserAsync ( String nationalCode )
         {
-            String url = $"https://khedmat.razi.ac.ir/api/KhedmatAPI/khedmat/users?action=details&username=GXBsBt9n&password=qwe159asd753&nationalCode={nationalCode}";
+            String url = $"https://khedmat.razi.ac.ir/api/KhedmatAPI/khedmat/users?action=details&username={SD.KhedmatRaziUserName}&password={SD.KhedmatRaziPassword}&nationalCode={nationalCode}";
             var request = new HttpRequestMessage(HttpMethod.Post , url);
             var handler = new HttpClientHandler()
             {

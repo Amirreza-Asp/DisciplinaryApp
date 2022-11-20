@@ -45,5 +45,9 @@
         public const String Managment = "Managment";
         public const String Admin = "Admin";
         public const String User = "User";
+
+        // API Details
+        public const String KhedmatRaziUserName = "GXBsBt9n";
+        public const String KhedmatRaziPassword = "f3EDwlbmrjiFH24234Whr";
     }
 }
