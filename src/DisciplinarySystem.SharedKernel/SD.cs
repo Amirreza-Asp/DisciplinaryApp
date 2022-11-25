@@ -34,8 +34,6 @@
         public const string ComplainingGroup = "متشاکی";
         public const string PlaitiffGroup = "شاکی";
 
-        public const String DefaultNationalCode = "3360408330";
-        //public const String DefaultNationalCode = "3251345125";
 
 
         public const string ForgetPassword = "ForgetPassword";
@@ -49,5 +47,10 @@
         // API Details
         public const String KhedmatRaziUserName = "GXBsBt9n";
         public const String KhedmatRaziPassword = "f3EDwlbmrjiFH24234Whr";
+
+        // Defaults
+        public const String DefaultPhoneNumber = "00000000000";
+        public const String DefaultNationalCode = "3360408330";
+        //public const String DefaultNationalCode = "3251345125";
     }
 }

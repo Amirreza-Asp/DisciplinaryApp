@@ -7,6 +7,9 @@ namespace DisciplinarySystem.Infrastructure.Apis.Messengers
     {
         public async Task<bool> Send ( String message , String phoneNumber )
         {
+            if ( phoneNumber == SD.DefaultPhoneNumber )
+                return true;
+
             String url = $"https://khedmat.razi.ac.ir/api/KhedmatAPI/message?action=sendSMS&username={SD.KhedmatRaziUserName}&password={SD.KhedmatRaziPassword}&text="
                 + message + "&FromOutside=true&MobileNumber={\"MobileNumber\":[\"" + phoneNumber + "\"]}";
             var request = new HttpRequestMessage(HttpMethod.Post , url);

@@ -93,13 +93,6 @@ namespace DisciplinarySystem.Presentation.Controllers.Users
                 return View(command);
             }
 
-            if ( String.IsNullOrEmpty(info.Mobile) )
-            {
-                TempData[SD.Warning] = $"شماره تلفن {String.Concat(info.Name + " " + info.Lastname)} در سیستم ثبت نشده است";
-                command = await FillUserInfo(command);
-                return View(command);
-            }
-
             await _userService.CreateAsync(command);
             TempData[SD.Success] = "عضو جدید به کمیته اضافه شد";
             return RedirectToAction(nameof(Index) , _filters);

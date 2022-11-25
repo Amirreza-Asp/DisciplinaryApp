@@ -3,6 +3,7 @@ using DisciplinarySystem.Application.Users.Interfaces;
 using DisciplinarySystem.Application.Users.ViewModels.User;
 using DisciplinarySystem.Domain.Authentication;
 using DisciplinarySystem.Domain.Users;
+using DisciplinarySystem.SharedKernel;
 using DisciplinarySystem.SharedKernel.Common;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -34,6 +35,8 @@ namespace DisciplinarySystem.Application.Users
 
             var userApi = await _userApi.GetUserAsync(user.NationalCode);
 
+            if ( String.IsNullOrEmpty(userApi.Mobile) )
+                userApi.Mobile = SD.DefaultPhoneNumber;
 
             _authUserRepo.Add(new AuthUser(userApi.Mobile , userApi.Idmelli , userApi.Name
                 , userApi.Lastname , userApi.Idmelli , _passwordHasher.HashPassword(userApi.Idmelli) , command.Access , user.Id));
