@@ -13,10 +13,9 @@ document.getElementById("submit-btn").addEventListener("click", (e) => {
 })
 
 // fix btn find position
-const spanFullName = document.getElementById("full-valid");
 const spanNatioalCode = document.getElementById("national-valid");
 const btnContainer = document.getElementById("btn-container");
-if (spanFullName.innerHTML || spanNatioalCode.innerHTML) {
+if (spanNatioalCode.innerHTML) {
     btnContainer.classList.remove("align-self-end");
     btnContainer.classList.add("align-self-center");
     btnContainer.classList.add("mt-2");

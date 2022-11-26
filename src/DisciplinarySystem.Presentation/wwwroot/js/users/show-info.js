@@ -1,14 +1,13 @@
 ﻿// auto fill fullname with national code
-function FindName(input) {
+function FindUserInfo(input) {
 	const nationalCode = input.value;
 	if (nationalCode.length === 10) {
 		$.ajax({
 			url: `/User/GetUserInfo/${nationalCode}`,
 			type: "GET",
 			success: function (data) {
-				console.log(data)
 				if (data.exists) {
-					document.getElementById("full-name").value = data.info.fullName;
+					document.getElementById("phone-number").value = data.info.phoneNumber;
 				}
 			}
 		})

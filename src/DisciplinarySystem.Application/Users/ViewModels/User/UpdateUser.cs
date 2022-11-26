@@ -12,6 +12,7 @@
                 Id = entity.Id ,
                 FullName = entity.FullName ,
                 NationalCode = entity.NationalCode ,
+                PhoneNumber = entity.AuthUser.PhoneNumber.Value ,
                 StartDate = entity.AttendenceTime.From ,
                 EndDate = entity.AttendenceTime.To ,
                 Type = entity.Type ,

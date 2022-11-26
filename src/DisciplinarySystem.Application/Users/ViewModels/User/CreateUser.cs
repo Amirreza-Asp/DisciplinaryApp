@@ -26,6 +26,11 @@ namespace DisciplinarySystem.Application.Users.ViewModels.User
         [Required(ErrorMessage = "نوع فعالیت")]
         public String Type { get; set; }
 
+        [Required(ErrorMessage = "شماره تلفن را وارد کنید")]
+        [MaxLength(11 , ErrorMessage = "شماره تلفن 11 رقم است")]
+        [MinLength(11 , ErrorMessage = "شماره تلفن 11 رقم است")]
+        public String PhoneNumber { get; set; }
+
         public long Access { get; set; }
 
         public List<SelectListItem>? Roles { get; set; }

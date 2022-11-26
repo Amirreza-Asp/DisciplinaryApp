@@ -38,7 +38,7 @@ namespace DisciplinarySystem.Application.Users
             if ( String.IsNullOrEmpty(userApi.Mobile) )
                 userApi.Mobile = SD.DefaultPhoneNumber;
 
-            _authUserRepo.Add(new AuthUser(userApi.Mobile , userApi.Idmelli , userApi.Name
+            _authUserRepo.Add(new AuthUser(command.PhoneNumber , userApi.Idmelli , userApi.Name
                 , userApi.Lastname , userApi.Idmelli , _passwordHasher.HashPassword(userApi.Idmelli) , command.Access , user.Id));
 
             _userRepo.Add(user);
@@ -61,7 +61,7 @@ namespace DisciplinarySystem.Application.Users
         {
             return await _userRepo.FirstOrDefaultAsync(
                 filter: u => u.Id == id ,
-                include: source => source.Include(u => u.Role));
+                include: source => source.Include(u => u.Role).Include(u => u.AuthUser));
         }
 
         public int GetCount ( Expression<Func<User , bool>> filter = null ) => _userRepo.GetCount(filter);
@@ -95,7 +95,7 @@ namespace DisciplinarySystem.Application.Users
 
         public async Task UpdateAsync ( UpdateUser command )
         {
-            User user = await _userRepo.FindAsync(command.Id);
+            User user = await _userRepo.FirstOrDefaultAsync(u => u.Id == command.Id);
             if ( user == null )
                 return;
 
@@ -106,10 +106,12 @@ namespace DisciplinarySystem.Application.Users
                 .WithRoleId(command.RoleId)
                 .WithType(command.Type);
 
+
             AuthUser authUser = await _authUserRepo.FirstOrDefaultAsync(u => u.UserId == user.Id);
             if ( authUser != null )
             {
                 authUser.WithRoleId(command.Access);
+                authUser.WithPhoneNumber(command.PhoneNumber);
                 _authUserRepo.Update(authUser);
             }
 

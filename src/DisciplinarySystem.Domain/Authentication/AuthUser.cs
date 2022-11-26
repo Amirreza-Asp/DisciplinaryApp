@@ -44,6 +44,12 @@ namespace DisciplinarySystem.Domain.Authentication
             return this;
         }
 
+        public AuthUser WithPhoneNumber ( String phoneNumber )
+        {
+            PhoneNumber = phoneNumber;
+            return this;
+        }
+
         public AuthUser WithUserId ( Guid? userId )
         {
             UserId = userId;
