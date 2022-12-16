@@ -1,109 +1,131 @@
 ﻿@model DisciplinarySystem.Presentation.Models.DashboradVM
 
 @section Styles{
-	<!--  specific styles  -->
-	<link rel="stylesheet" href="~/css/pages//dashboard.css">
+    <!--  specific styles  -->
+    <link rel="stylesheet" href="~/css/pages/dashboard.css">
 }
 
-	<div class="d-flex align-items-start align-items-sm-center justify-content-between mb-2 flex-column flex-sm-row">
-		<h3>داشبورد</h3>
-	</div>
-	<div class="dashboard">
-		<div class="dashboard__info text-center row gap-2 justify-content-center align-items-center mx-auto">
-			<div class="card shadow-sm dashboard__info-item bg-primary text-white">
-				<h5>تعداد کل پرونده ها</h5>
-				<span class="dashboard__info-value fw-bold">
-					@(Model.CurrentCasesCount + Model.EndCasesCount)
-				</span>
-			</div>
-			<div class="card shadow-sm dashboard__info-item bg-success text-white">
-				<h5>تعداد پرونده های جاری</h5>
-				<span class="dashboard__info-value fw-bold">
-					@Model.CurrentCasesCount
-				</span>
-		</div>
-		<div class="card shadow-sm dashboard__info-item bg-orange text-white">
-			<h5>تعداد پرونده های خاتمه یافته</h5>
-			<span class="dashboard__info-value fw-bold">
-				@Model.EndCasesCount
-			</span>
-		</div>
-		<div class="card shadow-sm dashboard__info-item bg-secondary text-white">
-			<h5>تعداد جلسات امسال</h5>
-			<span class="dashboard__info-value fw-bold">
-				@Model.MeetingsCount
-			</span>
-		</div>
-	</div>
-	<div class="row mt-5">
-		<div class="d-flex text-center justify-content-center mb-3 col-xl-4 g-2 mt-3">
-			<div class="dashboard__meetings ms-2">
-				<div class="card h-100">
-					<h5>جلسات امروز</h5>
-					@if (Model.TodaysMeetings.Any())
-					{
-						@foreach (var item in Model.TodaysMeetings)
-						{
-							<div class="badge fw-bold dashboard__meetings-item h-100">
-								<span>@item.From تا @item.To</span>
-							</div>
-						}
-					}
-					else
-					{
-						<span class="text-danger">هیچ جلسه ای ندارید</span>
-					}
-				</div>
-			</div>
-			<div class="dashboard__meetings">
-				<div class="card h-100">
-					<h5>جلسات فردا</h5>
-					@if (Model.TomorrowMeetings.Any())
-					{
-						@foreach (var item in Model.TomorrowMeetings)
-						{
-							<div class="badge fw-bold dashboard__meetings-item h-100">
-								<span>@item.From تا @item.To</span>
-							</div>
-						}
-					}
-					else
-					{
-						<span class="text-danger">هیچ جلسه ای ندارید</span>
-					}
-				</div>
-			</div>
-		</div>
-		<div class="col-xl-8 mb-3 ">
-			<canvas id="complaints-in-year" style="width:100%;"></canvas>
-		</div>
-	</div>
-	<div class="row">
-		<div class="col-md-6 my-4">
-			<canvas id="comlaints-result"></canvas>
-		</div>
-		<div class="col-md-6 my-4">
-			<canvas id="info"></canvas>
-		</div>
-	</div>
+    <div style="position:fixed;left:20px;bottom:20px;opacity:0.8;">
+        <button class="btn btn-info text-white" onclick="PrintPage('dashboard-page')">چاپ</button>
+    </div>
+    <section id="dashboard-page">
+        <div class="d-flex align-items-start align-items-sm-center justify-content-between mb-2 flex-column flex-sm-row">
+            <h3>داشبورد</h3>
+        </div>
+        <div class="dashboard">
+            <div class="dashboard__info text-center row gap-2 justify-content-center align-items-center mx-auto">
+                <div class="card shadow-sm dashboard__info-item bg-primary text-white">
+                    <h5>تعداد کل پرونده ها</h5>
+                    <span class="dashboard__info-value fw-bold">
+                        @(Model.CurrentCasesCount + Model.EndCasesCount)
+                </span>
+            </div>
+            <div class="card shadow-sm dashboard__info-item bg-success text-white">
+                <h5>تعداد پرونده های جاری</h5>
+                <span class="dashboard__info-value fw-bold">
+                    @Model.CurrentCasesCount
+                </span>
+            </div>
+            <div class="card shadow-sm dashboard__info-item bg-orange text-white">
+                <h5>تعداد پرونده های خاتمه یافته</h5>
+                <span class="dashboard__info-value fw-bold">
+                    @Model.EndCasesCount
+                </span>
+            </div>
+            <div class="card shadow-sm dashboard__info-item bg-secondary text-white">
+                <h5>تعداد جلسات امسال</h5>
+                <span class="dashboard__info-value fw-bold">
+                    @Model.MeetingsCount
+                </span>
+            </div>
+        </div>
+        <div class="row mt-5">
+            <div class="d-flex text-center justify-content-center mb-3 col-xl-4 g-2 mt-3">
+                <div class="dashboard__meetings ms-2">
+                    <div class="card h-100">
+                        <h5>جلسات امروز</h5>
+                        @if ( Model.TodaysMeetings.Any() )
+                        {
+                            @foreach ( var item in Model.TodaysMeetings )
+                            {
+                                <div class="badge fw-bold dashboard__meetings-item h-100">
+                                    <span>@item.From تا @item.To</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-danger">هیچ جلسه ای ندارید</span>
+                        }
+                    </div>
+                </div>
+                <div class="dashboard__meetings">
+                    <div class="card h-100">
+                        <h5>جلسات فردا</h5>
+                        @if ( Model.TomorrowMeetings.Any() )
+                        {
+                            @foreach ( var item in Model.TomorrowMeetings )
+                            {
+                                <div class="badge fw-bold dashboard__meetings-item h-100">
+                                    <span>@item.From تا @item.To</span>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-danger">هیچ جلسه ای ندارید</span>
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-xl-8 mb-3 ">
+                <canvas id="complaints-in-year" ></canvas>
+            </div>
+        </div>
+        <div class="row canvas-container">
+            <div class="col-md-6 my-4">
+                <canvas id="comlaints-result"></canvas>
+            </div>
+            <div class="col-md-6 my-4">
+                <canvas id="info"></canvas>
+            </div>
+        </div>
 
-	<div class="row">
-		<div class="col-lg-6 mb-4">
-			<canvas id="complaints-in-months"></canvas>
-		</div>
-		<div class="col-lg-6 col-md-6 mb-4">
-			<canvas id="cases-vote"></canvas>
-		</div>
-	</div>
+        <div class="row canvas-container">
+            <div class="col-md-6 mb-4">
+                <canvas id="complaints-in-months"></canvas>
+            </div>
+            <div class="col-md-6 mb-4">
+                <canvas id="cases-vote"></canvas>
+            </div>
+        </div>
 
-	<div class="mb-4">
-		<canvas id="votes"></canvas>
-	</div>
-</div>
+        <div class="mb-4">
+            <canvas id="votes"></canvas>
+        </div>
+    </div>
+</section>
 
 <div class="backdrop"></div>
 
 @section Scripts{
-	<script src="~/lib/Chart.js/chart.min.js"></script>
-	<script src="~/js/dashboard.js"></script>
+    <script src="~/lib/Chart.js/chart.min.js"></script>
+    <script src="~/js/dashboard.js"></script>
+    <script src="~/lib/print-pdf/print.min.js"></script>
+    <script src="~/js/utility/pdf.js"></script>
+
+    <script>
+
+        const containers = document.getElementsByClassName("canvas-container");
+        function PrintPage(id){
+            Array.from(containers).forEach(item=>item.classList.remove("row"));
+            
+            PDF(id);
+                                                     
+            Array.from(containers).forEach(item => item.classList.add("row"));
+        }
+
+
+
+    </script>
 }

@@ -3,9 +3,10 @@
     printJS({
         printable: id,
         type: 'html',
-        css: ['../../css/main.min.css', 'https://pro.fontawesome.com/releases/v5.10.0/css/all.css'],
+        css: ['../../css/main.min.css',
+            '../../lib/fontawesome-pro-6.1.1-web/css/all.css',
+            '../../css/pages/dashboard.css'],
         targetStyles: ['*'],
         scanStyles: false
     })
-    document.getElementById(id).setAttribute("style" , "");
 }

@@ -1,4 +1,4 @@
-﻿@using DisciplinarySystem.SharedKernel
+﻿@using DisciplinarySystem.SharedKernel;
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,7 +9,7 @@
 	@*************** Bootstarp ****************@
 	<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 
-	@*************** Custom ****************@
+    @*************** Custom ****************@
 	<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/DisciplinarySystem.Presentation.styles.css" asp-append-version="true" />
 	<link rel="stylesheet" href="~/css/main.css" />
@@ -115,12 +115,11 @@
                     <li class="sidebar__item"><a class="sidebar__link" asp-area="" asp-controller="Meeting" asp-action="Index">تقویم جلسات</a></li>
                     <li class="sidebar__item"><a class="sidebar__link" asp-area="" asp-controller="SMS" asp-action="Index">پنل پیامکی</a></li>
                     <li class="sidebar__item"><a class="sidebar__link" href="~/files/site-info/راهنمای کاربری کمیته انضباطی.pdf">راهنمای کاربری</a></li>
-
                 </ul>
             </div>
         </aside>
 
-        <main class="main">
+        <main class="main" id="main">
             <partial name="_NotificationsPartial" />
 		@RenderBody()
 	</main>
