@@ -209,8 +209,8 @@
                 url: `/Epistle/GetPositions/${selected}`,
                 type: "GET",
                 success: function (info) {
+						console.log(info)
                     if (info.exists && info.data.length > 0) {
-
 						options.setAttribute("style", "color:black");
                         Array.from(options.children).forEach(item => item.remove());
                         Array.from(info.data).forEach(item => {

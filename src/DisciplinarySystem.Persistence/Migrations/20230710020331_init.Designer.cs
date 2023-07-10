@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DisciplinarySystem.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20221023190925_RemoveUserRoleTable")]
-    partial class RemoveUserRoleTable
+    [Migration("20230710020331_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -70,6 +70,9 @@ namespace DisciplinarySystem.Persistence.Migrations
                     b.Property<long>("RoleId")
                         .HasColumnType("bigint");
 
+                    b.Property<Guid?>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("UserName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -78,7 +81,36 @@ namespace DisciplinarySystem.Persistence.Migrations
 
                     b.HasIndex("RoleId");
 
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
+
                     b.ToTable("AuthUser");
+                });
+
+            modelBuilder.Entity("DisciplinarySystem.Domain.Commonications.SMS", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("SendDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Text")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("SMS");
                 });
 
             modelBuilder.Entity("DisciplinarySystem.Domain.Complaints.Complaining", b =>
@@ -246,10 +278,7 @@ namespace DisciplinarySystem.Persistence.Migrations
             modelBuilder.Entity("DisciplinarySystem.Domain.DisciplinaryCase.Cases.Case", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<long>("ComplaintId")
                         .HasColumnType("bigint");
@@ -854,6 +883,10 @@ namespace DisciplinarySystem.Persistence.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.HasIndex("RoleId");
@@ -969,6 +1002,10 @@ namespace DisciplinarySystem.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("DisciplinarySystem.Domain.Users.User", "User")
+                        .WithOne("AuthUser")
+                        .HasForeignKey("DisciplinarySystem.Domain.Authentication.AuthUser", "UserId");
+
                     b.OwnsOne("DisciplinarySystem.SharedKernel.ValueObjects.NationalCode", "NationalCode", b1 =>
                         {
                             b1.Property<long>("AuthUserId")
@@ -1016,6 +1053,42 @@ namespace DisciplinarySystem.Persistence.Migrations
                         .IsRequired();
 
                     b.Navigation("Role");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("DisciplinarySystem.Domain.Commonications.SMS", b =>
+                {
+                    b.HasOne("DisciplinarySystem.Domain.Authentication.AuthUser", "User")
+                        .WithMany("SMSCollection")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsOne("DisciplinarySystem.SharedKernel.ValueObjects.PhoneNumber", "PhoneNumber", b1 =>
+                        {
+                            b1.Property<Guid>("SMSId")
+                                .HasColumnType("uniqueidentifier");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasMaxLength(13)
+                                .IsUnicode(false)
+                                .HasColumnType("varchar(13)")
+                                .HasColumnName("PhoneNumber");
+
+                            b1.HasKey("SMSId");
+
+                            b1.ToTable("SMS");
+
+                            b1.WithOwner()
+                                .HasForeignKey("SMSId");
+                        });
+
+                    b.Navigation("PhoneNumber")
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("DisciplinarySystem.Domain.Complaints.Complaining", b =>
@@ -1845,6 +1918,11 @@ namespace DisciplinarySystem.Persistence.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("DisciplinarySystem.Domain.Authentication.AuthUser", b =>
+                {
+                    b.Navigation("SMSCollection");
+                });
+
             modelBuilder.Entity("DisciplinarySystem.Domain.Complaints.Complaining", b =>
                 {
                     b.Navigation("Complaint")
@@ -1950,6 +2028,9 @@ namespace DisciplinarySystem.Persistence.Migrations
 
             modelBuilder.Entity("DisciplinarySystem.Domain.Users.User", b =>
                 {
+                    b.Navigation("AuthUser")
+                        .IsRequired();
+
                     b.Navigation("InvitationUsers");
 
                     b.Navigation("MeetingUsers");

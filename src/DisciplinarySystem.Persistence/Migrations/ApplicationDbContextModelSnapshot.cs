@@ -276,10 +276,7 @@ namespace DisciplinarySystem.Persistence.Migrations
             modelBuilder.Entity("DisciplinarySystem.Domain.DisciplinaryCase.Cases.Case", b =>
                 {
                     b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
                         .HasColumnType("bigint");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"), 1L, 1);
 
                     b.Property<long>("ComplaintId")
                         .HasColumnType("bigint");

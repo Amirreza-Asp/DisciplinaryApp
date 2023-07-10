@@ -16,17 +16,17 @@ namespace DisciplinarySystem.Application.Cases
         private readonly IComplaintRepository _complaintRepo;
         private readonly IRepository<Epistle> _epistleRepo;
 
-        public CaseService ( ICaseReposiotry caseRepo , IComplaintRepository complaintRepo , IRepository<Epistle> epistleRepo )
+        public CaseService(ICaseReposiotry caseRepo, IComplaintRepository complaintRepo, IRepository<Epistle> epistleRepo)
         {
             _caseRepo = caseRepo;
             _complaintRepo = complaintRepo;
             _epistleRepo = epistleRepo;
         }
 
-        public async Task<Case> FullInformationAsync ( long id )
+        public async Task<Case> FullInformationAsync(long id)
         {
             return await _caseRepo.FirstOrDefaultAsync(
-                filter: entity => entity.Id == id ,
+                filter: entity => entity.Id == id,
                 include: source => source.Include(u => u.Complaint)
                                                               .ThenInclude(u => u.Complaining)
                                                         .Include(u => u.Complaint)
@@ -76,31 +76,31 @@ namespace DisciplinarySystem.Application.Cases
                                                             .ThenInclude(u => u.Documents));
         }
 
-        public async Task<IEnumerable<GetCases>> GetAllAsync ( Expression<Func<Case , bool>> filter = null , int skip = 0 , int take = 10 )
+        public async Task<IEnumerable<GetCases>> GetAllAsync(Expression<Func<Case, bool>> filter = null, int skip = 0, int take = 10)
         {
             return await _caseRepo.GetAllAsync<GetCases>(
-                filter: filter ,
-                include: source => source.Include(u => u.Complaint).ThenInclude(u => u.Complaining) ,
+                filter: filter,
+                include: source => source.Include(u => u.Complaint).ThenInclude(u => u.Complaining),
                 orderBy: source => source
                 .OrderByDescending(u => u.Id)
-                .OrderByDescending(u => u.Complaint.CreateDate) ,
-                skip: skip ,
-                take: take ,
+                .OrderByDescending(u => u.Complaint.CreateDate),
+                skip: skip,
+                take: take,
                 select: entity => new GetCases
                 {
-                    Id = entity.Id ,
-                    Status = entity.Status.ToPersian() ,
-                    College = entity.Complaint.Complaining.College ,
-                    FullName = entity.Complaint.Complaining.FullName ,
-                    Grade = entity.Complaint.Complaining.Grade ,
-                    StudentNumber = entity.Complaint.Complaining.StudentNumber ,
+                    Id = entity.Id,
+                    Status = entity.Status.ToPersian(),
+                    College = entity.Complaint.Complaining.College,
+                    FullName = entity.Complaint.Complaining.FullName,
+                    Grade = entity.Complaint.Complaining.Grade,
+                    StudentNumber = entity.Complaint.Complaining.StudentNumber,
                     EducationalGroup = entity.Complaint.Complaining.EducationalGroup
                 });
         }
 
-        public async Task<Case> GetByComplaintIdAsync ( long id )
+        public async Task<Case> GetByComplaintIdAsync(long id)
         {
-            return await _caseRepo.FirstOrDefaultAsync(u => u.ComplaintId == id ,
+            return await _caseRepo.FirstOrDefaultAsync(u => u.ComplaintId == id,
                             include: source => source
                                     .Include(u => u.Complaint)
                                         .ThenInclude(u => u.Complaining)
@@ -108,9 +108,9 @@ namespace DisciplinarySystem.Application.Cases
                                         .ThenInclude(u => u.Plaintiff));
         }
 
-        public async Task<Case> GetByIdAsync ( long id )
+        public async Task<Case> GetByIdAsync(long id)
         {
-            return await _caseRepo.FirstOrDefaultAsync(u => u.Id == id ,
+            return await _caseRepo.FirstOrDefaultAsync(u => u.Id == id,
                             include: source => source
                                     .Include(u => u.Complaint)
                                         .ThenInclude(u => u.Complaining)
@@ -118,31 +118,31 @@ namespace DisciplinarySystem.Application.Cases
                                         .ThenInclude(u => u.Plaintiff));
         }
 
-        public async Task CreateAsync ( CreateCase command )
+        public async Task CreateAsync(CreateCase command)
         {
-            var entity = new Case(command.ComplaintId);
-            var complaint = await _complaintRepo.FirstOrDefaultAsync(u => u.Id == command.ComplaintId , isTracking: true);
+            var entity = new Case(command.Id, command.ComplaintId);
+            var complaint = await _complaintRepo.FirstOrDefaultAsync(u => u.Id == command.ComplaintId, isTracking: true);
             complaint.WithResult(ComplaintResult.SeeCase);
             _caseRepo.Add(entity);
             await _caseRepo.SaveAsync();
         }
 
-        public long GetCount ( Expression<Func<Case , bool>> filter = null )
+        public long GetCount(Expression<Func<Case, bool>> filter = null)
         {
             return _caseRepo.GetCount(filter);
         }
 
-        public async Task<bool> RemoveAsync ( long id )
+        public async Task<bool> RemoveAsync(long id)
         {
-            var entity = await _caseRepo.FirstOrDefaultAsync(u => u.Id == id ,
+            var entity = await _caseRepo.FirstOrDefaultAsync(u => u.Id == id,
                 include: source => source.Include(u => u.Complaint)
                 .Include(u => u.Epistles)
                 .ThenInclude(u => u.Documents));
 
-            if ( entity == null )
+            if (entity == null)
                 return false;
 
-            if ( entity.Epistles != null )
+            if (entity.Epistles != null)
             {
                 entity.Epistles.ToList().ForEach(item =>
                 {

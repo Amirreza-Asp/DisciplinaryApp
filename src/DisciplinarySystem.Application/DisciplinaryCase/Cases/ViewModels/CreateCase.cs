@@ -5,6 +5,10 @@ namespace DisciplinarySystem.Application.Cases.ViewModels
 {
     public class CreateCase
     {
+        [Required(ErrorMessage = "شماره پرونده را وارد کنید")]
+        [Range(0, long.MaxValue, ErrorMessage = "شماره پرونده نمیتواند منفی باشد")]
+        public long Id { get; set; }
+
         [Required(ErrorMessage = "لطفا شماره شکایت را وارد کنید")]
         public long ComplaintId { get; set; }
 

@@ -8,6 +8,7 @@ namespace DisciplinarySystem.Application.Complaints.ViewModels.Update
 {
     public class UpdateComplaint
     {
+
         public long Id { get; set; }
         public DateTime CreateDate { get; set; }
 
@@ -21,6 +22,7 @@ namespace DisciplinarySystem.Application.Complaints.ViewModels.Update
 
         public List<SelectListItem>? Results { get; set; }
         public int Result { get; set; }
+
 
         public UpdateComplaining Complaining { get; set; }
         public UpdatePlaintiff Plaintiff { get; set; }

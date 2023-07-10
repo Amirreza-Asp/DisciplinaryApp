@@ -11,8 +11,9 @@ namespace DisciplinarySystem.Domain.DisciplinaryCase.Cases
 {
     public class Case : BaseEntity<long>
     {
-        public Case(long complaintId)
+        public Case(long id, long complaintId)
         {
+            Id = Guard.Against.Negative(id);
             ComplaintId = Guard.Against.NegativeOrZero(complaintId);
             Status = CaseStatus.Filing;
         }

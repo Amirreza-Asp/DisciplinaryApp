@@ -10,10 +10,10 @@ namespace DisciplinarySystem.Application.Violations.Intefaces
     public interface IViolationService
     {
         Task<List<GetViolatonDetails>> GetAllAsync(Expression<Func<Violation, bool>> filter = null, int skip = 0, int take = 10);
-        Task<IEnumerable<SelectListItem>> GetSelectedListAsync();
+        Task<IEnumerable<SelectListItem>> GetSelectedListAsync(Expression<Func<Violation, bool>> filter = null);
         Task<Violation> GetByIdAsync(Guid id);
         Task<Violation> FindAsync(
-            Expression<Func<Violation,bool>> filter ,
+            Expression<Func<Violation, bool>> filter,
             Func<IQueryable<Violation>, IIncludableQueryable<Violation, object>> include = null);
         int GetCount(Expression<Func<Violation, bool>> filter = null);
         Task<ViolationDocument> GetDocumentByIdAsync(Guid id);

@@ -5,10 +5,24 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace DisciplinarySystem.Persistence.Migrations
 {
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "AuthRole",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuthRole", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Complainings",
                 columns: table => new
@@ -159,6 +173,7 @@ namespace DisciplinarySystem.Persistence.Migrations
                     CreateDate = table.Column<DateTime>(type: "datetime2", nullable: false, defaultValueSql: "GETDATE()"),
                     StartDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     EndDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     RoleId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },
                 constraints: table =>
@@ -176,8 +191,7 @@ namespace DisciplinarySystem.Persistence.Migrations
                 name: "Cases",
                 columns: table => new
                 {
-                    Id = table.Column<long>(type: "bigint", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Id = table.Column<long>(type: "bigint", nullable: false),
                     Status = table.Column<int>(type: "int", nullable: false),
                     ComplaintId = table.Column<long>(type: "bigint", nullable: false)
                 },
@@ -211,6 +225,38 @@ namespace DisciplinarySystem.Persistence.Migrations
                         principalTable: "Complaints",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AuthUser",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    PhoneNumber = table.Column<string>(type: "varchar(11)", unicode: false, maxLength: 11, nullable: false),
+                    NationalCode = table.Column<string>(type: "varchar(10)", unicode: false, maxLength: 10, nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Family = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    RoleId = table.Column<long>(type: "bigint", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AuthUser", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AuthUser_AuthRole_RoleId",
+                        column: x => x.RoleId,
+                        principalTable: "AuthRole",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_AuthUser_Users_UserId",
+                        column: x => x.UserId,
+                        principalTable: "Users",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -419,6 +465,28 @@ namespace DisciplinarySystem.Persistence.Migrations
                         name: "FK_Violations_ViolationCategories_CategoryId",
                         column: x => x.CategoryId,
                         principalTable: "ViolationCategories",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "SMS",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "varchar(13)", unicode: false, maxLength: 13, nullable: false),
+                    Text = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    SendDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UserId = table.Column<long>(type: "bigint", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_SMS", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_SMS_AuthUser_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AuthUser",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -739,6 +807,18 @@ namespace DisciplinarySystem.Persistence.Migrations
                 });
 
             migrationBuilder.CreateIndex(
+                name: "IX_AuthUser_RoleId",
+                table: "AuthUser",
+                column: "RoleId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AuthUser_UserId",
+                table: "AuthUser",
+                column: "UserId",
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Cases_ComplaintId",
                 table: "Cases",
                 column: "ComplaintId",
@@ -901,6 +981,11 @@ namespace DisciplinarySystem.Persistence.Migrations
                 column: "CaseId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_SMS_UserId",
+                table: "SMS",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Users_RoleId",
                 table: "Users",
                 column: "RoleId");
@@ -963,6 +1048,9 @@ namespace DisciplinarySystem.Persistence.Migrations
                 name: "RelatedInfoDocuments");
 
             migrationBuilder.DropTable(
+                name: "SMS");
+
+            migrationBuilder.DropTable(
                 name: "ViolationDocuments");
 
             migrationBuilder.DropTable(
@@ -984,9 +1072,6 @@ namespace DisciplinarySystem.Persistence.Migrations
                 name: "Invitations");
 
             migrationBuilder.DropTable(
-                name: "Users");
-
-            migrationBuilder.DropTable(
                 name: "Objections");
 
             migrationBuilder.DropTable(
@@ -999,7 +1084,7 @@ namespace DisciplinarySystem.Persistence.Migrations
                 name: "RelatedInfos");
 
             migrationBuilder.DropTable(
-                name: "Roles");
+                name: "AuthUser");
 
             migrationBuilder.DropTable(
                 name: "Verdicts");
@@ -1008,10 +1093,19 @@ namespace DisciplinarySystem.Persistence.Migrations
                 name: "Violations");
 
             migrationBuilder.DropTable(
+                name: "AuthRole");
+
+            migrationBuilder.DropTable(
+                name: "Users");
+
+            migrationBuilder.DropTable(
                 name: "Cases");
 
             migrationBuilder.DropTable(
                 name: "ViolationCategories");
+
+            migrationBuilder.DropTable(
+                name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Complaints");

@@ -27,7 +27,7 @@ namespace DisciplinarySystem.Presentation.Controllers.Complaints
 
         private static FilterVM _filterVM = new FilterVM();
 
-        public ComplaintController ( IComplaintService complaintService , IWebHostEnvironment hostEnv , IUserApi userApi , ICaseService caseService )
+        public ComplaintController(IComplaintService complaintService, IWebHostEnvironment hostEnv, IUserApi userApi, ICaseService caseService)
         {
             _complaintService = complaintService;
             _hostEnv = hostEnv;
@@ -35,64 +35,64 @@ namespace DisciplinarySystem.Presentation.Controllers.Complaints
             _caseService = caseService;
         }
 
-        public async Task<IActionResult> Index ( FilterVM filterVM )
+        public async Task<IActionResult> Index(FilterVM filterVM)
         {
             filterVM = SetFilters(filterVM);
             var complintsVm = new GetComplaintsListVM
             {
-                Complaints = await GetFilteredComplaints(filterVM) ,
-                TotalCount = GetFilteredCount(filterVM) ,
+                Complaints = await GetFilteredComplaints(filterVM),
+                TotalCount = GetFilteredCount(filterVM),
                 Filters = SetFilters(filterVM)
             };
 
             return View(complintsVm);
         }
 
-        public async Task<IActionResult> Details ( long id , long caseId )
+        public async Task<IActionResult> Details(long id, long caseId)
         {
             var entity = await _complaintService.GetByIdAsync(id);
-            if ( entity == null )
+            if (entity == null)
             {
                 TempData[SD.Warning] = "شکایت مورد نظر پیدا نشد";
-                return RedirectToAction(nameof(Index) , _filterVM);
+                return RedirectToAction(nameof(Index), _filterVM);
             }
 
-            var vm = new ComplaintDetailsVM { Complaint = entity , CaseId = caseId };
+            var vm = new ComplaintDetailsVM { Complaint = entity, CaseId = caseId };
             return View(vm);
         }
 
-        public IActionResult Create ()
+        public IActionResult Create()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create ( CreateComplaint createComplaint )
+        public async Task<IActionResult> Create(CreateComplaint createComplaint)
         {
-            if ( !ModelState.IsValid )
+            if (!ModelState.IsValid)
                 return View(createComplaint);
 
             var complainingInfo = await _complaintService.GetUserAsync(createComplaint.Complaining.NationalCode);
-            if ( complainingInfo == null )
+            if (complainingInfo == null)
             {
                 TempData[SD.Error] = "متشاکی وارد شده وجود ندارد";
                 return View(complainingInfo);
             }
 
-            createComplaint.Complaining = SetComplainingInfo(createComplaint.Complaining , complainingInfo);
+            createComplaint.Complaining = SetComplainingInfo(createComplaint.Complaining, complainingInfo);
             var files = HttpContext.Request.Form.Files;
-            await _complaintService.CreateAsync(createComplaint , files);
+            await _complaintService.CreateAsync(createComplaint, files);
 
             TempData[SD.Success] = "شکایت با موفقیت ذخیره شد";
-            return RedirectToAction(nameof(Index) , _filterVM);
+            return RedirectToAction(nameof(Index), _filterVM);
         }
 
-        public async Task<IActionResult> Update ( long id , long caseId )
+        public async Task<IActionResult> Update(long id, long caseId)
         {
             var complaint = await _complaintService.GetByIdAsync(id);
-            if ( complaint == null )
+            if (complaint == null)
             {
                 TempData[SD.Error] = "شکایت مورد نظر وجود ندارد";
-                return RedirectToAction(nameof(Index) , _filterVM);
+                return RedirectToAction(nameof(Index), _filterVM);
             }
 
             var updateComplaint = UpdateComplaint.CreateWith(complaint);
@@ -100,64 +100,86 @@ namespace DisciplinarySystem.Presentation.Controllers.Complaints
             return View(updateComplaint);
         }
         [HttpPost]
-        public async Task<IActionResult> Update ( UpdateComplaint updateComplaint )
+        public async Task<IActionResult> Update(UpdateComplaint updateComplaint)
         {
-            if ( !ModelState.IsValid )
+            if (!ModelState.IsValid)
             {
                 updateComplaint.Results = new List<SelectListItem>
                 {
-                    new SelectListItem(){Text = ComplaintResult.Archive.ToPersian() , Value = ComplaintResult.Archive.ToString()},
-                    new SelectListItem(){Text = ComplaintResult.Filing.ToPersian() , Value = ComplaintResult.Filing.ToString()}
+                    new SelectListItem() { Text = ComplaintResult.Archive.ToPersian(), Value = Convert.ToInt32(ComplaintResult.Archive).ToString() },
+                    new SelectListItem() { Text = ComplaintResult.Filing.ToPersian(), Value = Convert.ToInt32(ComplaintResult.Filing).ToString() }
+                };
+                return View(updateComplaint);
+            }
+
+            if (await _caseService.GetByIdAsync(updateComplaint.CaseId) != null)
+            {
+                TempData[SD.Error] = "شماره پرونده وارد شده در سیستم وجود دارد";
+                updateComplaint.Results = new List<SelectListItem>
+                {
+                    new SelectListItem(){Text = ComplaintResult.Archive.ToPersian() , Value = Convert.ToInt32(ComplaintResult.Archive).ToString()},
+                    new SelectListItem(){Text = ComplaintResult.Filing.ToPersian() , Value =  Convert.ToInt32(ComplaintResult.Filing).ToString()}
 
                 };
                 return View(updateComplaint);
             }
 
+            if (updateComplaint.CaseId < 0)
+            {
+                TempData[SD.Error] = "شماره پرونده نمیتواند منفی باشد";
+                updateComplaint.Results = new List<SelectListItem>
+                {
+                    new SelectListItem(){Text = ComplaintResult.Archive.ToPersian() , Value =  Convert.ToInt32(ComplaintResult.Archive).ToString()},
+                    new SelectListItem(){Text = ComplaintResult.Filing.ToPersian() , Value = Convert.ToInt32(ComplaintResult.Filing).ToString()}
+
+                };
+                return View(updateComplaint);
+            }
 
             var files = HttpContext.Request.Form.Files;
-            var res = await _complaintService.UpdateAsync(updateComplaint , files);
+            var res = await _complaintService.UpdateAsync(updateComplaint, files);
             TempData[SD.Info] = "ویرایش شکایت با موفقیت انجام شد";
 
-            if ( res.ShowResult() == UpdateComplaintResult.CaseList )
-                return RedirectToAction(nameof(CaseController.Index) , "Case");
-            return RedirectToAction(nameof(Index) , _filterVM);
+            if (res.ShowResult() == UpdateComplaintResult.CaseList)
+                return RedirectToAction(nameof(CaseController.Index), "Case");
+            return RedirectToAction(nameof(Index), _filterVM);
 
         }
 
-        public async Task<JsonResult> Remove ( long id )
+        public async Task<JsonResult> Remove(long id)
         {
-            if ( await _complaintService.RemoveAsync(id) )
-                return Json(new { Success = true , Message = "ایتم با موفقیت حذف شد" });
-            return Json(new { Success = false , Message = "حذف با شکست مواجه شد" });
+            if (await _complaintService.RemoveAsync(id))
+                return Json(new { Success = true, Message = "ایتم با موفقیت حذف شد" });
+            return Json(new { Success = false, Message = "حذف با شکست مواجه شد" });
         }
 
-        public async Task<JsonResult> RemoveFile ( Guid id )
+        public async Task<JsonResult> RemoveFile(Guid id)
         {
-            if ( await _complaintService.RemoveFileAsync(id) )
-                return Json(new { Success = true , Message = "حذف با موفقیت انجام شد" });
-            return Json(new { Success = false , Message = "حذف با شکست مواجه شد" });
+            if (await _complaintService.RemoveFileAsync(id))
+                return Json(new { Success = true, Message = "حذف با موفقیت انجام شد" });
+            return Json(new { Success = false, Message = "حذف با شکست مواجه شد" });
         }
 
-        public IActionResult Download ( String file , String fileName )
+        public IActionResult Download(String file, String fileName)
         {
             string filePath = _hostEnv.WebRootPath + SD.ComplaintDocumentPath + file;
             byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
-            return File(fileBytes , "application/force-download" , fileName);
+            return File(fileBytes, "application/force-download", fileName);
         }
 
-        public async Task<JsonResult> GetUserInfo ( String id )
+        public async Task<JsonResult> GetUserInfo(String id)
         {
             var user = await _userApi.GetUserAsync(id);
-            if ( user != null )
+            if (user != null)
                 return Json(new
                 {
-                    Exists = true ,
+                    Exists = true,
                     Data = new
                     {
-                        FullName = $"{user.Name} {user.Lastname}" ,
-                        StudentNumber = user.StudentNumber ,
-                        College = user.Trend ,
-                        Grade = user.Grade ,
+                        FullName = $"{user.Name} {user.Lastname}",
+                        StudentNumber = user.StudentNumber,
+                        College = user.Trend,
+                        Grade = user.Grade,
                         Father = user.Fathername
                     }
                 });
@@ -165,7 +187,7 @@ namespace DisciplinarySystem.Presentation.Controllers.Complaints
         }
 
         #region Utilities
-        private CreateComplaining SetComplainingInfo ( CreateComplaining comp , UserInfo user )
+        private CreateComplaining SetComplainingInfo(CreateComplaining comp, UserInfo user)
         {
             comp.StudentNumber = user.StudentNumber.ToString();
             comp.FullName = user.Name + " " + user.Lastname;
@@ -176,37 +198,37 @@ namespace DisciplinarySystem.Presentation.Controllers.Complaints
             return comp;
         }
 
-        private async Task<IEnumerable<GetComplaint>> GetFilteredComplaints ( FilterVM filterVM )
+        private async Task<IEnumerable<GetComplaint>> GetFilteredComplaints(FilterVM filterVM)
         {
             return await _complaintService.GetAllAsync(
                         filter: u =>
-                                ( u.Complaining.FullName.Contains(filterVM.FullName) ||
-                                u.Plaintiff.FullName.Contains(filterVM.FullName) ) &&
+                                (u.Complaining.FullName.Contains(filterVM.FullName) ||
+                                u.Plaintiff.FullName.Contains(filterVM.FullName)) &&
                                 u.Complaining.Grade.Contains(filterVM.Grade) &&
                                 u.Complaining.EducationalGroup.Contains(filterVM.EducationalGroup) &&
                                 u.Complaining.NationalCode.Value.Contains(filterVM.NationalCode) &&
                                 u.Complaining.StudentNumber.Value.Contains(filterVM.StudentNumber) &&
                                 u.Complaining.College.Contains(filterVM.College) &&
-                                ( filterVM.CaseId <= 0 || u.Case.Id == filterVM.CaseId ) ,
-                                take: filterVM.Take ,
+                                (filterVM.CaseId <= 0 || u.Case.Id == filterVM.CaseId),
+                                take: filterVM.Take,
                                 skip: filterVM.Skip);
         }
 
-        private int GetFilteredCount ( FilterVM filterVM )
+        private int GetFilteredCount(FilterVM filterVM)
         {
             return _complaintService.GetCount(filter: u =>
-                                ( u.Complaining.FullName.Contains(filterVM.FullName) ||
-                                u.Plaintiff.FullName.Contains(filterVM.FullName) ) &&
+                                (u.Complaining.FullName.Contains(filterVM.FullName) ||
+                                u.Plaintiff.FullName.Contains(filterVM.FullName)) &&
                                 u.Complaining.Grade.Contains(filterVM.Grade) &&
                                 u.Complaining.EducationalGroup.Contains(filterVM.EducationalGroup) &&
                                 u.Complaining.NationalCode.Value.Contains(filterVM.NationalCode) &&
                                 u.Complaining.StudentNumber.Value.Contains(filterVM.StudentNumber) &&
                                 u.Complaining.College.Contains(filterVM.College) &&
-                                ( filterVM.CaseId <= 0 || u.Case.Id == filterVM.CaseId )
+                                (filterVM.CaseId <= 0 || u.Case.Id == filterVM.CaseId)
                               );
         }
 
-        private FilterVM SetFilters ( FilterVM filters )
+        private FilterVM SetFilters(FilterVM filters)
         {
             filters.FullName = String.IsNullOrEmpty(filters.FullName) ? "" : filters.FullName;
             filters.College = String.IsNullOrEmpty(filters.College) ? "" : filters.College;

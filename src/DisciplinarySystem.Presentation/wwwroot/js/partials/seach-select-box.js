@@ -4,7 +4,6 @@
 }
 
 function HideOptions(item) {
-    alert("dfnsdl")
     const options = item.nextElementSibling;
     console.log(options)
     options.classList.remove("active");
@@ -43,7 +42,11 @@ function SetOption(item) {
     const searchInput = item.parentElement.previousElementSibling.children[0].children[0];
     const targetInput = item.parentElement.previousElementSibling.previousElementSibling;
 
+    console.log(searchInput)
+    console.log(targetInput)
+
     searchInput.value = item.innerText;
+
     targetInput.setAttribute("value", value);
     targetInput.dispatchEvent(new Event("change"));
 

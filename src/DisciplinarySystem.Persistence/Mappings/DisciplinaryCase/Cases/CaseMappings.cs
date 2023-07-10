@@ -9,6 +9,7 @@ namespace DisciplinarySystem.Persistence.Mappings.DisciplinaryCases.Cases
         public void Configure(EntityTypeBuilder<Case> builder)
         {
             builder.HasKey(b => b.Id);
+            builder.Property(b => b.Id).ValueGeneratedNever();
 
             builder.Property(b => b.Status);
 
