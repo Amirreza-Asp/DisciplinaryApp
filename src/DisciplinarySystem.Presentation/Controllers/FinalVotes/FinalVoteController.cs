@@ -38,8 +38,9 @@ namespace DisciplinarySystem.Presentation.Controllers.FinalVotes
 
         public async Task<IActionResult> Index(FinalVoteFilter filters)
         {
+            var primaryVote = await _primaryVoteService.GetByCaseIdAsync(filters.CaseId);
 
-            if (_primaryVoteService.GetByCaseIdAsync(filters.CaseId).GetAwaiter().GetResult().IsClosed)
+            if (primaryVote != null && primaryVote.IsClosed)
             {
                 TempData[SD.Error] = "پرونده مختومه است";
                 return Redirect(Request.GetTypedHeaders().Referer.ToString());

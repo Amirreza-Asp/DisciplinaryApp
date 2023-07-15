@@ -31,8 +31,9 @@ namespace DisciplinarySystem.Presentation.Controllers.Objections
 
         public async Task<IActionResult> Index(ObjectionFilter filters)
         {
+            var primaryVote = await _primaryVoteService.GetByCaseIdAsync(filters.CaseId);
 
-            if (_primaryVoteService.GetByCaseIdAsync(filters.CaseId).GetAwaiter().GetResult().IsClosed)
+            if (primaryVote != null && primaryVote.IsClosed)
             {
                 TempData[SD.Error] = "پرونده مختومه است";
                 return Redirect(Request.GetTypedHeaders().Referer.ToString());
