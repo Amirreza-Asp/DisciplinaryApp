@@ -1,5 +1,6 @@
 ﻿using DisciplinarySystem.Application.DisciplinaryCase.CentralCommitteeVotes.Interfaces;
 using DisciplinarySystem.Application.DisciplinaryCase.CentralCommitteeVotes.ViewModels;
+using DisciplinarySystem.Application.PrimaryVotes.Interfaces;
 using DisciplinarySystem.Application.Verdicts.Interfaces;
 using DisciplinarySystem.Application.Violations.Intefaces;
 using DisciplinarySystem.Domain.DisciplinaryCase.CentralCommitteeVotes;
@@ -17,19 +18,27 @@ namespace DisciplinarySystem.Presentation.Controllers.CentralCommitteeVotes
         private readonly IWebHostEnvironment _hostEnv;
         private readonly IViolationService _violationService;
         private readonly IVerdictService _verdictService;
+        private readonly IPrimaryVoteService _primaryVoteService;
 
         private static CommitteeVoteFilter _filters = new CommitteeVoteFilter();
 
-        public CentralCommitteeVoteController(ICentralCommitteeVoteService ccvService, IWebHostEnvironment hostEnv, IViolationService violationService, IVerdictService verdictService)
+        public CentralCommitteeVoteController(ICentralCommitteeVoteService ccvService, IWebHostEnvironment hostEnv, IViolationService violationService, IVerdictService verdictService, IPrimaryVoteService primaryVoteService)
         {
             _ccvService = ccvService;
             _hostEnv = hostEnv;
             _violationService = violationService;
             _verdictService = verdictService;
+            _primaryVoteService = primaryVoteService;
         }
 
         public async Task<IActionResult> Index(CommitteeVoteFilter filters)
         {
+            if (_primaryVoteService.GetByCaseIdAsync(filters.CaseId).GetAwaiter().GetResult().IsClosed)
+            {
+                TempData[SD.Error] = "پرونده مختومه است";
+                return Redirect(Request.GetTypedHeaders().Referer.ToString());
+            }
+
             _filters = filters;
 
             var vm = new GetAllComitteeVotes

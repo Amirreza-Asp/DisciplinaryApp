@@ -12,6 +12,7 @@ namespace DisciplinarySystem.Persistence.Mappings.PrimaryVotes
 			builder.Property(b => b.Id).ValueGeneratedNever();
 
 			builder.Property(b => b.Description);
+			builder.Property(b => b.IsClosed);
 			builder.Property(b => b.CreateTime).HasDefaultValueSql("GETDATE()");
 
 			builder.HasOne(b => b.Verdict)

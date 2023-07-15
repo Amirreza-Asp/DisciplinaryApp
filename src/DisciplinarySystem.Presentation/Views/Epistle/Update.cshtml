@@ -61,7 +61,7 @@
 							<label class="form-label">سمت:</label>
 							<div class="select-container">
 
-								<input value="" onchange="ChangePosition(this , 'sender-option')" hidden>
+								<input value="" onchange="ChangePosition(this , 'sender-option','sender-person')" hidden>
 								<div class="select">
 									<div class="select-search">
 										<input name="select"
@@ -75,9 +75,9 @@
 								</div>
 
 								<ul class="select-list" id="options">
-									@if ( Model.Positions != null )
+									@if (Model.Positions != null)
 									{
-										@foreach ( var item in Model.Positions )
+										@foreach (var item in Model.Positions)
 										{
 											<li class="select-item search-options" onclick="SetOption(this)">
 												<div value="@item.Value">@item.Text</div>
@@ -88,13 +88,21 @@
 							</div>
 						</div>
 						<br />
-						<label class="form-label">نام و نام خانوادگی:</label>
-						<div class="dropdown">
-							<select class="form-control" asp-for="@Model.Sender" id="sender-option">
-								<option selected>@Model.Sender</option>
-							</select>
+						<div>
+							<label class="form-label">انتخاب شخص:</label>
+							<div class="dropdown">
+								<select class="form-control" onchange="ChangePerosn(this ,'sender-person')" id="sender-option">
+								</select>
+							</div>
 						</div>
-						<span class="text-danger" asp-validation-for="Sender"></span>
+						<br />
+						<div>
+							<label class="form-label">نام و نام خانوادگی:</label>
+							<div>
+								<input asp-for="Sender" class="form-control" id="sender-person" />
+							</div>
+							<span asp-validation-for="Sender"></span>
+						</div>
 					</div>
 				</section>
 			</div>
@@ -107,7 +115,7 @@
 							<label class="form-label">سمت:</label>
 							<div class="select-container">
 
-								<input value="" onchange="ChangePosition(this , 'reciver-options')" hidden>
+								<input value="" onchange="ChangePosition(this , 'reciver-options' , 'reciver-person')" hidden>
 								<div class="select">
 									<div class="select-search">
 										<input name="select"
@@ -121,9 +129,9 @@
 								</div>
 
 								<ul class="select-list" id="options">
-									@if ( Model.Positions != null )
+									@if (Model.Positions != null)
 									{
-										@foreach ( var item in Model.Positions )
+										@foreach (var item in Model.Positions)
 										{
 											<li class="select-item search-options" onclick="SetOption(this)">
 												<div value="@item.Value">@item.Text</div>
@@ -134,13 +142,21 @@
 							</div>
 						</div>
 						<br />
-						<label class="form-label">نام و نام خانوادگی:</label>
-						<div class="dropdown">
-							<select id="reciver-options" class="form-control" asp-for="@Model.Reciver">
-								<option selected>@Model.Reciver</option>
-							</select>
+						<div>
+							<label class="form-label">انتخاب شخص:</label>
+							<div class="dropdown">
+								<select id="reciver-options" class="form-control" onchange="ChangePerosn(this , 'reciver-person')">
+								</select>
+							</div>
 						</div>
-						<span class="text-danger" asp-validation-for="Reciver"></span>
+						<br />
+						<div>
+							<label class="form-label">نام و نام خانوادگی:</label>
+							<div>
+								<input asp-for="Reciver" class="form-control" id="reciver-person" />
+							</div>
+							<span asp-validation-for="Reciver"></span>
+						</div>
 					</div>
 				</section>
 			</div>
@@ -238,9 +254,14 @@
 	<script src="~/js/partials/seach-select-box.js"></script>
 	<script>
 
+		function ChangePerosn(select, id) {
+			const input = document.getElementById(id);
+			input.value = select.value;
+		}
 
-		function ChangePosition(selectOption, id) {
+		function ChangePosition(selectOption, id, inputId) {
 			const options = document.getElementById(id);
+			const input = document.getElementById(inputId);
 			const selected = selectOption.value;
 
 
@@ -249,7 +270,6 @@
 				type: "GET",
 				success: function (info) {
 					if (info.exists && info.data.length > 0) {
-
 						options.setAttribute("style", "color:black");
 						Array.from(options.children).forEach(item => item.remove());
 						Array.from(info.data).forEach(item => {
@@ -258,6 +278,7 @@
 							opt.text = item.text;
 							options.appendChild(opt);
 						});
+						input.value = Array.from(info.data)[0].text;
 					}
 					else if (info.exists) {
 						Array.from(options.children).forEach(item => item.remove());

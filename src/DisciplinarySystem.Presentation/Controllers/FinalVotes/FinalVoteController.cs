@@ -3,6 +3,7 @@ using DisciplinarySystem.Application.Complaints.ViewModels.Create;
 using DisciplinarySystem.Application.FinalVotes.Interfaces;
 using DisciplinarySystem.Application.FinalVotes.ViewModels;
 using DisciplinarySystem.Application.Helpers;
+using DisciplinarySystem.Application.PrimaryVotes.Interfaces;
 using DisciplinarySystem.Application.Users.Interfaces;
 using DisciplinarySystem.Application.Violations.Intefaces;
 using DisciplinarySystem.Domain.FinalVotes;
@@ -21,20 +22,30 @@ namespace DisciplinarySystem.Presentation.Controllers.FinalVotes
         private readonly IUserService _userService;
         private readonly IComplainingService _comService;
         private readonly IViolationService _violatonService;
+        private readonly IPrimaryVoteService _primaryVoteService;
 
         private static FinalVoteFilter _filters = new FinalVoteFilter();
 
-        public FinalVoteController(IFinalVoteService fvoService, IWebHostEnvironment hostEnv, IUserService userService, IComplainingService comService, IViolationService violatonService)
+        public FinalVoteController(IFinalVoteService fvoService, IWebHostEnvironment hostEnv, IUserService userService, IComplainingService comService, IViolationService violatonService, IPrimaryVoteService primaryVoteService)
         {
             _fvoService = fvoService;
             _hostEnv = hostEnv;
             _userService = userService;
             _comService = comService;
             _violatonService = violatonService;
+            _primaryVoteService = primaryVoteService;
         }
 
         public async Task<IActionResult> Index(FinalVoteFilter filters)
         {
+
+            if (_primaryVoteService.GetByCaseIdAsync(filters.CaseId).GetAwaiter().GetResult().IsClosed)
+            {
+                TempData[SD.Error] = "پرونده مختومه است";
+                return Redirect(Request.GetTypedHeaders().Referer.ToString());
+            }
+
+
             _filters = filters;
             filters.CreateTime = filters.CreateTime.ToMiladi();
             filters.Verdicts = await _fvoService.GetSelectedVotesAsync();

@@ -35,6 +35,7 @@
 						<th>تخلف</th>
 						<th>حکم</th>
 						<th>تاریخ ایجاد</th>
+						<th>وضعیت</th>
 						<th>عملیات</th>
 					</tr>
 				</thead>
@@ -45,6 +46,7 @@
 							<td>@Model.PrimaryVotes.ElementAt(i).Violation.Title</td>
 							<td>@Model.PrimaryVotes.ElementAt(i).Verdict.Title</td>
 							<td>@Model.PrimaryVotes.ElementAt(i).CreateTime.ToShamsi()</td>
+							<td>@(Model.PrimaryVotes.ElementAt(i).IsClosed ? "مختومه": "جاری")</td>
 							<td>
 								<div class="table__action">
 									<a class="btn btn--show" asp-action="Details" asp-route-id="@Model.PrimaryVotes.ElementAt(i).Id"><i class="fa fa-eye"></i></a>
